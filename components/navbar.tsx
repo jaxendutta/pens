@@ -51,8 +51,8 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-2" href="/">
-            <TbSettings2 size={20} />
-            <p className="font-bold text-inherit">Jaxen's Pens</p>
+            <TbSettings2 size={18} />
+            <p className="text-inherit">Jaxen's Pens</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">

@@ -3,19 +3,13 @@ slug: "minutes-apart"
 title: "Minutes Apart"
 author: "Jaxen Dutta"
 location: "Ottawa, Ontario, Canada"
-date: "2025-01-15"
-lastRevision: "2025-01-15"
-excerpt: "A mysterious tale of shadows that dance when no one is watching"
-password: "shadow123"
+date: "2025-07-08"
+lastRevision: "2025-07-12"
+excerpt: "A tale of two fawns."
+password: ""
 ---
 
-# Minutes Apart
-
-### Jaxen Dutta
-#### Ottawa, Ontario, Canada
-July 10, 2025
-
-## 1 Born Minutes Apart
+## Born Minutes Apart
 Sometimes I imagine the mist on a perfect day. Not too hot, neither too cold. Two fawns, born just an hour or two ago, a handful of minutes between them. They’re cousins, for their mothers were born of the same womb four summers ago. But they play, through the mist, through the memories, as if the world has been waiting all this time just to witness their first steps together.
 
 In the deep forests of the northern mountains, where ancient pines hold conversations in languages older than human memory, the bond between cousins began before their first breath. White-tailed deer, scientists tell us, can recognize family relationships across generations through scent alone — pheromones that carry the story of bloodlines in molecules too small for human understanding. These fawns knew each other before knowing themselves, their mothers grazing side by side through their gestation, their unborn hearts beating in rhythm across the thin walls of wombs that had shared the same grandmother’s warmth.

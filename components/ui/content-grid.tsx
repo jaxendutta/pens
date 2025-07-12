@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { motion } from "framer-motion";
 import { Card, CardBody } from "@heroui/react";
 import { TbBook, TbSparkles } from "react-icons/tb";
-import { ContentMeta } from '@/lib/types';
+import { ContentMeta, ContentType } from '@/lib/types';
 import { SearchFilter } from './search-filter';
 import { ContentCard } from './content-card';
 
 interface ContentGridProps {
     items: ContentMeta[];
-    type: 'pieces' | 'poems';
+    type: ContentType;
     title: string;
     description: string;
 }
@@ -26,7 +26,7 @@ const containerVariants = {
     }
 };
 
-const EmptyState = ({ type }: { type: 'pieces' | 'poems' }) => (
+const EmptyState = ({ type }: { type: ContentType }) => (
     <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -35,17 +35,12 @@ const EmptyState = ({ type }: { type: 'pieces' | 'poems' }) => (
     >
         <Card className="max-w-md mx-auto">
             <CardBody className="text-center p-12">
-                <div className="text-6xl mb-6">
-                    {type === 'pieces' ? '📚' : '🌸'}
-                </div>
+                <div className="text-6xl mb-6">🌸</div>
                 <h3 className="text-2xl font-semibold mb-3">
-                    No {type === 'pieces' ? 'Stories' : 'Poems'} Yet
+                    No {type.charAt(0).toUpperCase() + type.slice(1)} Yet
                 </h3>
                 <p className="text-default-600 leading-relaxed">
-                    {type === 'pieces'
-                        ? 'Stories will appear here once they\'re added to the collection. Check back soon for new literary pieces to explore.'
-                        : 'Poems will appear here once they\'re added to the collection. Check back soon for new verses to discover.'
-                    }
+                    {type.charAt(0).toUpperCase() + type.slice(1)} will appear here once they're added to the collection. Check back soon for new verses to discover.
                 </p>
             </CardBody>
         </Card>
@@ -62,7 +57,7 @@ export function ContentGrid({ items, type, title, description }: ContentGridProp
     const isPieces = type === 'pieces';
 
     return (
-        <div className="container mx-auto px-6 py-12">
+        <div className="container mx-auto lg:px-6 md:px-4 px-2 py-12">
             {/* Header */}
             <motion.div
                 className="text-center mb-16"

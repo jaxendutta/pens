@@ -7,21 +7,22 @@ import {
     CardBody,
     CardFooter,
     Button,
+    ButtonGroup,
     Chip,
     Divider,
     Spacer,
+    Tooltip,
 } from "@heroui/react";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
 import { motion } from "framer-motion";
 import {
     TbArrowLeft,
-    TbBook,
-    TbSparkles,
+    TbCopy,
     TbClock,
     TbFileText,
     TbCalendar,
-    TbMapPin,
+    TbLink,
     TbTag,
     TbShare,
     TbPrinter,
@@ -96,6 +97,51 @@ export function ContentReader({ content, type }: ContentReaderProps) {
         window.print();
     };
 
+    const metadata = [
+        {
+            icon: TbCalendar,
+            text: formatDate(content.date),
+        },
+        {
+            icon: TbClock,
+            text: `${content.readingTime} min read`,
+        },
+        {
+            icon: TbFileText,
+            text: `${content.wordCount.toLocaleString()} words`,
+        },
+    ]
+
+    const actionButtons = [
+        {
+            icon: TbLink,
+            label: 'Link',
+            onClick: () => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        },
+        {
+            icon: TbShare,
+            label: 'Share',
+            onClick: handleShare,
+        },
+        {
+            icon: TbCopy,
+            label: 'Copy',
+            onClick: () => {
+                navigator.clipboard.writeText(content.content);
+                alert('Content copied to clipboard!');
+            },
+        },
+        {
+            icon: TbPrinter,
+            label: 'Print',
+            onClick: handlePrint,
+        },
+
+    ]
+
     if (!isAuthenticated) {
         return (
             <>
@@ -135,44 +181,69 @@ export function ContentReader({ content, type }: ContentReaderProps) {
         <div className="min-h-screen">
             <ReadingProgress />
 
-            <div className="container mx-auto px-6 py-12 max-w-4xl">
-                {/* Back Navigation */}
-                <motion.div
-                    className="mb-8"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Button
-                        as={NextLink}
-                        href={`/${type}`}
-                        variant="flat"
-                        startContent={<TbArrowLeft size={16} />}
-                        className="hover:bg-default-100"
-                    >
-                        Back to {isPieces ? 'Stories' : 'Poems'}
-                    </Button>
-                </motion.div>
+            <div className="container mx-auto lg:px-6 px-2 py-12 max-w-4xl">
+                <div className="flex items-center justify-between mb-8">
+                    {/* Back Navigation */}
+                    <Tooltip content={`Back`}>
+                        <Button
+                            isIconOnly
+                            as={NextLink}
+                            href={`/${type}`}
+                            variant="flat"
+                            startContent={<TbArrowLeft size={16} />}
+                            className="hover:bg-default-100"
+                            aria-label="Back to list"
+                        />
+                    </Tooltip>
+
+                    {/* Action Buttons */}
+                    <ButtonGroup>
+                        {actionButtons.map((btn, index) => (
+                            <Tooltip key={index} content={btn.label}>
+                                <Button
+                                    isIconOnly
+                                    variant="flat"
+                                    onPress={btn.onClick}
+                                    startContent={<btn.icon size={16} />}
+                                    className="hover:bg-default-100"
+                                    aria-label={btn.label}
+                                />
+                            </Tooltip>
+                        ))}
+                    </ButtonGroup>
+                </div>
 
                 {/* Content Header */}
                 <motion.div variants={fadeInVariants} initial="hidden" animate="visible">
                     <Card className="mb-8">
-                        <CardHeader className="pb-4 pt-8 px-8 flex-col items-start">
-                            {/* Status badges */}
-                            <div className="flex gap-2 mb-6 flex-wrap">
-                                <Chip
-                                    color={isPieces ? 'primary' : 'secondary'}
-                                    variant="flat"
-                                    startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
-                                >
-                                    {isPieces ? 'Story' : 'Poem'}
-                                </Chip>
+                        <CardHeader className="py-8 px-8 flex-col items-start">
+                            {/* Title */}
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                                {content.title}
+                            </h1>
+
+                            {/* Metadata */}
+                            <div className="w-full flex flex-wrap gap-2">
+                                {metadata.map((item, index) => (
+                                    item && (
+                                        <Chip
+                                            key={index}
+                                            variant="flat"
+                                            color="primary"
+                                            size="md"
+                                            startContent={<item.icon size={14} />}
+                                            className="p-1.5 items-center"
+                                        >
+                                            {item.text}
+                                        </Chip>
+                                    )
+                                ))}
 
                                 {isProtected && (
                                     <Chip
                                         color="success"
                                         variant="flat"
-                                        startContent={<TbLockOpen size={16} />}
+                                        startContent={<TbLockOpen size={14} />}
                                     >
                                         Authenticated
                                     </Chip>
@@ -190,48 +261,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                     </Chip>
                                 ))}
                             </div>
-
-                            {/* Title */}
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                                {content.title}
-                            </h1>
-
-                            {/* Metadata */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full text-sm">
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbCalendar size={16} />
-                                    <span>{formatDate(content.date)}</span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbClock size={16} />
-                                    <span>{content.readingTime} min read</span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbFileText size={16} />
-                                    <span>{content.wordCount.toLocaleString()} words</span>
-                                </div>
-
-                                {content.location && (
-                                    <div className="flex items-center gap-2 text-default-600">
-                                        <TbMapPin size={16} />
-                                        <span>{content.location}</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            <p className="text-default-600 text-sm mt-4">by {content.author}</p>
                         </CardHeader>
-
-                        {content.excerpt && (
-                            <CardBody className="pt-0 px-8">
-                                <Divider className="mb-6" />
-                                <p className="text-lg text-default-700 leading-relaxed italic">
-                                    {content.excerpt}
-                                </p>
-                            </CardBody>
-                        )}
                     </Card>
                 </motion.div>
 
@@ -243,14 +273,14 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                     transition={{ delay: 0.2 }}
                 >
                     <Card>
-                        <CardBody className="p-8 sm:p-12">
+                        <CardBody className="lg:p-8 md:p-7 p-6">
                             <div
                                 className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-24"
                                 dangerouslySetInnerHTML={{ __html: content.content }}
                                 style={{
                                     // Enhanced typography for better reading
                                     lineHeight: 1.8,
-                                    fontSize: '1.125rem',
+                                    fontSize: '1rem',
                                 }}
                             />
                         </CardBody>
@@ -291,6 +321,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                 <Spacer y={8} />
             </div>
-        </div>
+        </div >
     );
 }

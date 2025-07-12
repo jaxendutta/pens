@@ -14,7 +14,7 @@ import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import {
     TbLock,
-    TbBook,
+    TbBook2,
     TbSparkles,
     TbClock,
     TbFileText,
@@ -53,16 +53,23 @@ export function ContentCard({ content, type }: ContentCardProps) {
     const contentUrl = `/${type}/${content.slug}`;
     const isPiece = type === 'pieces';
 
+    const metadata = [
+        { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
+        { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
+        { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
+        ...(content.chapters ? [{ icon: <TbBook2 size={14} />, text: `${content.chapters} chapters` }] : []),
+    ]
+
     return (
         <>
             <motion.div
                 variants={cardVariants}
                 initial="hidden"
                 animate="visible"
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className="h-full"
             >
-                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 border-1 hover:border-primary/20">
+                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 hover:border-primary/20">
                     <CardHeader className="pb-3 pt-6 px-6 flex-col items-start">
                         {/* Status badges */}
                         <div className="flex gap-2 mb-3 flex-wrap">
@@ -70,9 +77,10 @@ export function ContentCard({ content, type }: ContentCardProps) {
                                 color={isPiece ? 'primary' : 'secondary'}
                                 variant="flat"
                                 size="sm"
-                                startContent={isPiece ? <TbBook size={14} /> : <TbSparkles size={14} />}
+                                startContent={isPiece ? <TbBook2 size={12} /> : <TbSparkles size={12} />}
+                                className="px-1.5"
                             >
-                                {isPiece ? 'Story' : 'Poem'}
+                                {isPiece ? 'Piece' : 'Poem'}
                             </Chip>
 
                             {content.isProtected && (
@@ -80,7 +88,8 @@ export function ContentCard({ content, type }: ContentCardProps) {
                                     color="warning"
                                     variant="flat"
                                     size="sm"
-                                    startContent={<TbLock size={14} />}
+                                    startContent={<TbLock size={12} />}
+                                    className="px-1.5"
                                 >
                                     Protected
                                 </Chip>
@@ -99,11 +108,10 @@ export function ContentCard({ content, type }: ContentCardProps) {
                             )}
                         </div>
 
-                        {/* Title and author */}
+                        {/* Title */}
                         <h4 className="font-bold text-xl leading-tight mb-2 group-hover:text-primary transition-colors">
                             {content.title}
                         </h4>
-                        <p className="text-sm text-default-600 mb-1">by {content.author}</p>
 
                         {content.location && (
                             <div className="flex items-center gap-1 text-xs text-default-500">
@@ -120,33 +128,18 @@ export function ContentCard({ content, type }: ContentCardProps) {
 
                         {/* Metadata */}
                         <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="flex items-center gap-2 text-default-600">
-                                <TbCalendar size={14} />
-                                <span>{formatDate(content.date)}</span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-default-600">
-                                <TbClock size={14} />
-                                <span>{content.readingTime} min read</span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-default-600">
-                                <TbFileText size={14} />
-                                <span>{content.wordCount.toLocaleString()} words</span>
-                            </div>
-
-                            {content.chapters && content.chapters > 0 && (
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbBook size={14} />
-                                    <span>{content.chapters} chapters</span>
+                            {metadata.map((item, index) => (
+                                <div key={index} className="flex items-center gap-1.5 text-default-600">
+                                    {item.icon}
+                                    <span>{item.text}</span>
                                 </div>
-                            )}
+                            ))}
                         </div>
                     </CardBody>
 
                     <Divider />
 
-                    <CardFooter className="px-6 py-4">
+                    <CardFooter className="p-4">
                         {content.isProtected ? (
                             <Button
                                 color="warning"
