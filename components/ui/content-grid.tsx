@@ -40,7 +40,7 @@ const EmptyState = ({ type }: { type: ContentType }) => (
                     No {type.charAt(0).toUpperCase() + type.slice(1)} Yet
                 </h3>
                 <p className="text-default-600 leading-relaxed">
-                    {type.charAt(0).toUpperCase() + type.slice(1)} will appear here once they're added to the collection. Check back soon for new verses to discover.
+                    {type.charAt(0).toUpperCase() + type.slice(1)} will appear here once they&apos;re added to the collection. Check back soon for new verses to discover.
                 </p>
             </CardBody>
         </Card>

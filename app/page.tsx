@@ -24,7 +24,7 @@ export default function Home() {
           </Chip>
 
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Jaxen's <span className="text-primary">Pens</span>
+            Jaxen&apos;s <span className="text-primary">Pens</span>
           </h1>
 
           <p className="text-xl text-default-600 mb-8 max-w-2xl">

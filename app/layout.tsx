@@ -47,7 +47,7 @@ export default function RootLayout({
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-8 text-sm">
-              I'm glad you're here.
+              I&apos;m glad you&apos;re here.
             </footer>
           </div>
         </Providers>
