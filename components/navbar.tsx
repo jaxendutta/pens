@@ -5,7 +5,6 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@heroui/navbar";
 import { Button } from "@heroui/button";
 import { Kbd } from "@heroui/kbd";
@@ -52,7 +51,7 @@ export const Navbar = () => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-2" href="/">
             <TbSettings2 size={18} />
-            <p className="text-inherit">Jaxen's Pens</p>
+            <p className="text-inherit">Jaxen&apos;s Pens</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
