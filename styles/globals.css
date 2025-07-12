@@ -193,6 +193,7 @@
     button,
     .navbar,
     .footer,
+    .table-of-contents,
     nav {
         display: none !important;
     }
@@ -268,24 +269,7 @@
         background: #f0f0f0 !important;
         color: black !important;
     }
-
-    /* Table of contents for print */
-    .table-of-contents {
-        background: #f8f8f8 !important;
-        border: 2px solid black !important;
-        margin: 1rem 0 2rem 0 !important;
-        page-break-after: avoid;
-    }
-
-    .table-of-contents h3 {
-        color: black !important;
-    }
-
-    .table-of-contents a {
-        color: black !important;
-        text-decoration: underline !important;
-    }
-
+    
     /* Print header/footer info */
     @page {
         margin: 1in;

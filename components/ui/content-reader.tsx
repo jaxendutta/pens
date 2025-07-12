@@ -8,6 +8,7 @@ import {
     Chip,
     Image,
     Spacer,
+    useDisclosure,
 } from "@heroui/react";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
@@ -23,13 +24,14 @@ import {
     TbTag,
     TbLock,
     TbLockOpen,
+    TbAccessible,
 } from "react-icons/tb";
 import { ContentItem } from '@/lib/types';
 import { formatDate } from '@/lib/content';
-import { ReadingProgress } from './reading-progress';
 import { PasswordModal } from './password-modal';
 import { FloatingActionBar } from './floating-action-bar';
 import { TableOfContents } from './table-of-contents';
+import { AccessibilityPanel } from './accessibility-panel';
 
 interface ContentReaderProps {
     content: ContentItem;
@@ -51,6 +53,8 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const [estimatedReadTime, setEstimatedReadTime] = useState(0);
     const [imageError, setImageError] = useState(false);
 
+    const { isOpen: isAccessibilityOpen, onOpen: onAccessibilityOpen, onOpenChange: onAccessibilityOpenChange } = useDisclosure();
+
     const isPieces = type === 'pieces';
     const isProtected = Boolean(content.password);
 
@@ -60,7 +64,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
         { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
         { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
         { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
-        ...(content.chapters ? [{ icon: <TbBook size={14} />, text: `${content.chapters} chapters` }] : []),
+        ...(content.chapters && content.chapters > 0 ? [{ icon: <TbBook size={14} />, text: `${content.chapters} ${content.chapters === 1 ? 'chapter' : 'chapters'}` }] : []),
         ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
     ];
 
@@ -87,7 +91,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     if (!isAuthenticated) {
         return (
             <>
-                <ReadingProgress />
                 <div className="min-h-screen flex items-center justify-center">
                     <Card className="max-w-md">
                         <CardBody className="text-center p-8">
@@ -121,145 +124,160 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     return (
         <div className="min-h-screen">
-            <ReadingProgress />
+            {/* Sticky ToC with accessibility integration */}
+            <TableOfContents
+                content={content.content}
+                onAccessibilityClick={onAccessibilityOpen}
+            />
+
+            {/* Accessibility Panel */}
+            <AccessibilityPanel
+                isOpen={isAccessibilityOpen}
+                onOpenChange={onAccessibilityOpenChange}
+            />
+
             <FloatingActionBar
                 contentTitle={content.title}
                 contentUrl={typeof window !== 'undefined' ? window.location.href : ''}
                 showReadingProgress={true}
             />
 
-            <div className="container mx-auto px-6 py-12 max-w-4xl">
-                {/* Back Navigation */}
-                <motion.div
-                    className="mb-8"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Button
-                        as={NextLink}
-                        href={`/${type}`}
-                        variant="flat"
-                        startContent={<TbArrowLeft size={16} />}
-                        className="hover:bg-default-100"
+            {/* Main content with proper spacing for sidebar */}
+            <div className="lg:ml-96 transition-all duration-300">
+                <div className="container mx-auto lg:px-6 md:px-4 px-2 py-12 max-w-4xl">
+                    {/* Back Navigation */}
+                    <motion.div
+                        className="mb-8"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
                     >
-                        Back
-                    </Button>
-                </motion.div>
-
-                {/* Content Header */}
-                <motion.div variants={fadeInVariants} initial="hidden" animate="visible">
-                    <Card className="mb-8 py-8 px-8 flex-col items-start">
-                        {/* Status badges */}
-                        <div className="flex gap-2 mb-6 flex-wrap">
-                            <Chip
-                                color={isPieces ? 'primary' : 'secondary'}
+                        <div className="flex items-center justify-between">
+                            <Button
+                                as={NextLink}
+                                href={`/${type}`}
                                 variant="flat"
-                                startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
-                                className="pl-3 pr-1"
+                                startContent={<TbArrowLeft size={16} />}
+                                className="hover:bg-default-100"
                             >
-                                {isPieces ? 'Story' : 'Poem'}
-                            </Chip>
+                                Back to list
+                            </Button>
 
-                            {isProtected && (
+                            {/* Mobile accessibility button */}
+                            <Button
+                                isIconOnly
+                                variant="flat"
+                                onPress={onAccessibilityOpen}
+                                className="lg:hidden"
+                                aria-label="Open accessibility settings"
+                            >
+                                <TbAccessible size={16} />
+                            </Button>
+                        </div>
+                    </motion.div>
+
+                    {/* Content Header */}
+                    <motion.div variants={fadeInVariants} initial="hidden" animate="visible">
+                        <Card className="mb-8 py-8 px-8 flex-col items-start">
+                            {/* Status badges */}
+                            <div className="flex gap-2 mb-6 flex-wrap">
                                 <Chip
-                                    color="success"
+                                    color={isPieces ? 'primary' : 'secondary'}
                                     variant="flat"
-                                    startContent={<TbLockOpen size={16} />}
+                                    startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
                                     className="pl-3 pr-1"
                                 >
-                                    Authenticated
+                                    {isPieces ? 'Story' : 'Poem'}
                                 </Chip>
+
+                                {isProtected && (
+                                    <Chip
+                                        color="success"
+                                        variant="flat"
+                                        startContent={<TbLockOpen size={16} />}
+                                        className="pl-3 pr-1"
+                                    >
+                                        Authenticated
+                                    </Chip>
+                                )}
+
+                                {content.tags && content.tags.map(tag => (
+                                    <Chip
+                                        key={tag}
+                                        color="default"
+                                        variant="bordered"
+                                        size="sm"
+                                        startContent={<TbTag size={14} />}
+                                        className="pl-3 pr-1"
+                                    >
+                                        {tag}
+                                    </Chip>
+                                ))}
+                            </div>
+
+                            {/* Cover Image - only show if no error and file might exist */}
+                            {!imageError && (
+                                <div className="w-full mb-6 relative">
+                                    <Image
+                                        src={coverImagePath}
+                                        alt={`Cover image for ${content.title}`}
+                                        className="w-full h-auto rounded-lg object-cover"
+                                        onError={() => setImageError(true)}
+                                        fallbackSrc="/images/default-cover.jpg"
+                                    />
+                                    {content.imageCredit && (
+                                        <Link
+                                            href={content.imageCreditUrl || '#'}
+                                            className="absolute bottom-2 right-2 text-xs bg-black/50 text-white px-2 py-1 rounded hover:bg-black/70 transition-colors"
+                                            isExternal={!!content.imageCreditUrl}
+                                        >
+                                            © {content.imageCredit}
+                                        </Link>
+                                    )}
+                                </div>
                             )}
 
-                            {content.tags && content.tags.map(tag => (
-                                <Chip
-                                    key={tag}
-                                    color="default"
-                                    variant="bordered"
-                                    size="sm"
-                                    startContent={<TbTag size={14} />}
-                                    className="pl-3 pr-1"
-                                >
-                                    {tag}
-                                </Chip>
-                            ))}
-                        </div>
+                            {/* Title */}
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                                {content.title}
+                            </h1>
 
-                        {/* Cover Image - only show if no error and file might exist */}
-                        {!imageError && (
-                            <div className="w-full mb-6 relative">
-                                <Image
-                                    src={coverImagePath}
-                                    alt={`Cover image for ${content.title}`}
-                                    className="w-full h-auto rounded-lg object-cover"
-                                    onError={() => setImageError(true)}
-                                    fallbackSrc="/images/default-cover.jpg"
-                                />
-                                {content.imageCredit && (
-                                    <Link
-                                        href={content.imageCreditUrl || '#'}
-                                        className="absolute bottom-2 right-2 text-xs bg-black/50 text-white px-2 py-1 rounded hover:bg-black/70 transition-colors"
-                                        isExternal={!!content.imageCreditUrl}
+                            {/* Metadata */}
+                            <div className="flex flex-wrap gap-2">
+                                {metadata.map((item, index) => (
+                                    <Chip
+                                        key={index}
+                                        color="primary"
+                                        variant="flat"
+                                        startContent={item.icon}
+                                        className="pl-3 pr-1"
                                     >
-                                        © {content.imageCredit}
-                                    </Link>
-
-                                )}
+                                        {item.text}
+                                    </Chip>
+                                ))}
                             </div>
-                        )}
+                        </Card>
+                    </motion.div>
 
-                        {/* Title */}
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                            {content.title}
-                        </h1>
+                    {/* Main Content */}
+                    <motion.div
+                        variants={fadeInVariants}
+                        initial="hidden"
+                        animate="visible"
+                        transition={{ delay: 0.2 }}
+                    >
+                        <Card>
+                            <CardBody className="p-8 sm:p-12">
+                                <div
+                                    className="content-area max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: content.content }}
+                                />
+                            </CardBody>
+                        </Card>
+                    </motion.div>
 
-                        {/* Metadata */}
-                        <div className="flex flex-wrap gap-2">
-                            {metadata.map((item, index) => (
-                                <Chip
-                                    key={index}
-                                    color="primary"
-                                    variant="flat"
-                                    startContent={item.icon}
-                                    className="pl-3 pr-1"
-                                >
-                                    {item.text}
-                                </Chip>
-                            ))}
-                        </div>
-                    </Card>
-                </motion.div>
-
-                {/* Table of Contents */}
-                <motion.div
-                    variants={fadeInVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ delay: 0.1 }}
-                    className="mb-8"
-                >
-                    <TableOfContents content={content.content} />
-                </motion.div>
-
-                {/* Main Content */}
-                <motion.div
-                    variants={fadeInVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ delay: 0.2 }}
-                >
-                    <Card>
-                        <CardBody className="p-8 sm:p-12">
-                            <div
-                                className="content-area max-w-none"
-                                dangerouslySetInnerHTML={{ __html: content.content }}
-                            />
-                        </CardBody>
-                    </Card>
-                </motion.div>
-
-                <Spacer y={8} />
+                    <Spacer y={8} />
+                </div>
             </div>
 
             {showPasswordModal && (

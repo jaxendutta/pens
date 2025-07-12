@@ -23,6 +23,9 @@ export async function getContent(
         const wordCount = content.split(/\s+/).length;
         const readingTime = Math.ceil(wordCount / 200);
 
+        // Calculate chapters automatically by counting # headings (level 1)
+        const chapters = countChapters(content);
+
         return {
             slug,
             title: data.title || 'Untitled',
@@ -35,7 +38,7 @@ export async function getContent(
             password: data.password || null,
             readingTime,
             wordCount,
-            chapters: data.chapters || null,
+            chapters: data.chapters || chapters, // Use frontmatter chapters or auto-calculated
             location: data.location || null,
         };
     } catch (error) {
@@ -63,6 +66,12 @@ export async function getContentList(type: ContentType): Promise<ContentItem[]> 
         console.error(`Error loading ${type}:`, error);
         return [];
     }
+}
+
+function countChapters(content: string): number {
+    // Count level 1 headings (# heading) as chapters
+    const chapterMatches = content.match(/^#\s+.+$/gm);
+    return chapterMatches ? chapterMatches.length : 0;
 }
 
 async function processMarkdownContent(content: string): Promise<string> {
@@ -97,14 +106,32 @@ async function processMarkdownContent(content: string): Promise<string> {
 
     let htmlContent = processedMarkdown.toString();
 
-    // Replace HTML headings with better styled versions including more spacing
+    // Replace HTML headings with better styled versions including more spacing and IDs
     htmlContent = htmlContent
-        .replace(/<h1([^>]*)>(.*?)<\/h1>/g, '<h1 class="text-3xl lg:text-4xl font-bold text-foreground mb-6 mt-12 pb-3 border-b-2 border-divider scroll-mt-24 first:mt-0"$1>$2</h1>')
-        .replace(/<h2([^>]*)>(.*?)<\/h2>/g, '<h2 class="text-2xl lg:text-3xl font-bold text-foreground mb-4 mt-10 pb-2 border-b border-divider scroll-mt-24"$1>$2</h2>')
-        .replace(/<h3([^>]*)>(.*?)<\/h3>/g, '<h3 class="text-xl lg:text-2xl font-semibold text-foreground mb-3 mt-8 scroll-mt-24"$1>$2</h3>')
-        .replace(/<h4([^>]*)>(.*?)<\/h4>/g, '<h4 class="text-lg lg:text-xl font-semibold text-foreground mb-3 mt-6 scroll-mt-24"$1>$2</h4>')
-        .replace(/<h5([^>]*)>(.*?)<\/h5>/g, '<h5 class="text-base lg:text-lg font-semibold text-foreground mb-2 mt-5 scroll-mt-24"$1>$2</h5>')
-        .replace(/<h6([^>]*)>(.*?)<\/h6>/g, '<h6 class="text-sm lg:text-base font-semibold text-foreground mb-2 mt-4 scroll-mt-24"$1>$2</h6>')
+        .replace(/<h1([^>]*)>(.*?)<\/h1>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h1 id="${id}" class="text-3xl lg:text-4xl font-bold text-foreground mb-6 mt-12 pb-3 border-b-2 border-divider scroll-mt-24 first:mt-0"${attrs}>${content}</h1>`;
+        })
+        .replace(/<h2([^>]*)>(.*?)<\/h2>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h2 id="${id}" class="text-2xl lg:text-3xl font-bold text-foreground mb-4 mt-10 pb-2 border-b border-divider scroll-mt-24"${attrs}>${content}</h2>`;
+        })
+        .replace(/<h3([^>]*)>(.*?)<\/h3>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h3 id="${id}" class="text-xl lg:text-2xl font-semibold text-foreground mb-3 mt-8 scroll-mt-24"${attrs}>${content}</h3>`;
+        })
+        .replace(/<h4([^>]*)>(.*?)<\/h4>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h4 id="${id}" class="text-lg lg:text-xl font-semibold text-foreground mb-3 mt-6 scroll-mt-24"${attrs}>${content}</h4>`;
+        })
+        .replace(/<h5([^>]*)>(.*?)<\/h5>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h5 id="${id}" class="text-base lg:text-lg font-semibold text-foreground mb-2 mt-5 scroll-mt-24"${attrs}>${content}</h5>`;
+        })
+        .replace(/<h6([^>]*)>(.*?)<\/h6>/g, (match, attrs, content) => {
+            const id = generateHeadingId(content);
+            return `<h6 id="${id}" class="text-sm lg:text-base font-semibold text-foreground mb-2 mt-4 scroll-mt-24"${attrs}>${content}</h6>`;
+        })
 
         // Improved paragraph styling with better spacing
         .replace(/<p>/g, '<p class="mb-6 leading-relaxed text-foreground text-justify">')
