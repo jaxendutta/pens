@@ -34,6 +34,7 @@ interface ContentCardProps {
 
 export function ContentCard({ content, type }: ContentCardProps) {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const isProtected = Boolean(content.password);
 
     const cardVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -45,7 +46,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
     };
 
     const handleCardClick = () => {
-        if (content.isProtected) {
+        if (isProtected) {
             setShowPasswordModal(true);
         }
     };
@@ -84,7 +85,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
                                 {isPiece ? 'Story' : 'Poem'}
                             </Chip>
 
-                            {content.isProtected && (
+                            {isProtected && (
                                 <Chip
                                     color="warning"
                                     variant="flat"
@@ -138,7 +139,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
                     <Divider />
 
                     <CardFooter className="px-6 py-4">
-                        {content.isProtected ? (
+                        {isProtected ? (
                             <Button
                                 color="warning"
                                 variant="flat"

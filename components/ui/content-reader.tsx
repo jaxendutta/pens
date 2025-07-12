@@ -32,6 +32,7 @@ import { formatDate } from '@/lib/content';
 import { ReadingProgress } from './reading-progress';
 import { PasswordModal } from './password-modal';
 import { FloatingActionBar } from './floating-action-bar';
+import { TableOfContents } from './table-of-contents';
 
 interface ContentReaderProps {
     content: ContentItem;
@@ -51,9 +52,12 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [estimatedReadTime, setEstimatedReadTime] = useState(0);
+    const [imageError, setImageError] = useState(false);
 
     const isPieces = type === 'pieces';
     const isProtected = Boolean(content.password);
+
+    const coverImagePath = `/${type}/${content.slug}.jpg`;
 
     const metadata: { icon: JSX.Element; text: string }[] = [
         { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
@@ -186,14 +190,18 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 ))}
                             </div>
 
-                            {/* Image */}
-                            <div className="w-full mb-6">
-                                <Image
-                                    src={`/public/${type}/${content.slug}`}
-                                    alt={`Cover image for ${content.title}`}
-                                    className="w-full h-auto rounded-lg object-cover"
-                                />
-                            </div>
+                            {/* Cover Image - only show if no error and file might exist */}
+                            {!imageError && (
+                                <div className="w-full mb-6">
+                                    <Image
+                                        src={coverImagePath}
+                                        alt={`Cover image for ${content.title}`}
+                                        className="w-full h-auto rounded-lg object-cover"
+                                        onError={() => setImageError(true)}
+                                        fallbackSrc="/images/default-cover.jpg"
+                                    />
+                                </div>
+                            )}
 
                             {/* Title */}
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
@@ -202,13 +210,12 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                             {/* Metadata */}
                             <div className="flex flex-wrap gap-2">
-                                {metadata.map(item => (
+                                {metadata.map((item, index) => (
                                     <Chip
-                                        key={item.text}
+                                        key={index}
                                         color="primary"
                                         variant="flat"
                                         startContent={item.icon}
-                                        className="pl-3 pr-1"
                                     >
                                         {item.text}
                                     </Chip>
@@ -216,6 +223,17 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                             </div>
                         </CardHeader>
                     </Card>
+                </motion.div>
+
+                {/* Table of Contents */}
+                <motion.div
+                    variants={fadeInVariants}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ delay: 0.1 }}
+                    className="mb-8"
+                >
+                    <TableOfContents content={content.content} />
                 </motion.div>
 
                 {/* Main Content */}
@@ -235,14 +253,29 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                         <Divider />
 
-                        <CardFooter className="p-8 w-full justify-center">
-                            🌼🌼🌼
+                        <CardFooter className="p-8">
+                            <div className="text-sm text-default-600 w-full">
+                                {content.lastRevision !== content.date ? (
+                                    <span>Last updated: {formatDate(content.lastRevision)}</span>
+                                ) : (
+                                    <span>Published: {formatDate(content.date)}</span>
+                                )}
+                            </div>
                         </CardFooter>
                     </Card>
                 </motion.div>
 
                 <Spacer y={8} />
             </div>
+
+            {showPasswordModal && (
+                <PasswordModal
+                    isOpen={showPasswordModal}
+                    onClose={() => setShowPasswordModal(false)}
+                    contentSlug={content.slug}
+                    type={type}
+                />
+            )}
         </div>
     );
 }

@@ -1,19 +1,3 @@
-export interface ContentItem {
-    slug: string;
-    title: string;
-    author: string;
-    location?: string;
-    date: string;
-    lastRevision: string;
-    excerpt: string;
-    password?: string;
-    wordCount: number;
-    readingTime: number;
-    content: string;
-    tags?: string[];
-    chapters?: number;
-}
-
 export interface ContentMeta {
     slug: string;
     title: string;
@@ -26,7 +10,11 @@ export interface ContentMeta {
     readingTime: number;
     tags?: string[];
     chapters?: number;
-    isProtected: boolean;
+    password?: string | null;
+}
+
+export interface ContentItem extends ContentMeta {
+    content: string;
 }
 
 export type ContentType = 'pieces' | 'poems';

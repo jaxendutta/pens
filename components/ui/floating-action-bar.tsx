@@ -55,12 +55,27 @@ export function FloatingActionBar({
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
+    // Load font size from localStorage on mount
     useEffect(() => {
-        // Apply font size to content
-        const contentElements = document.querySelectorAll('.prose');
+        const savedFontSize = localStorage.getItem('reader-font-size');
+        if (savedFontSize) {
+            const size = parseInt(savedFontSize);
+            if (size >= 10 && size <= 36) {
+                setFontSize(size);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        // Apply font size to content areas (not .prose)
+        const contentElements = document.querySelectorAll('.content-area');
         contentElements.forEach(el => {
-            (el as HTMLElement).style.fontSize = `${fontSize}px`;
+            const element = el as HTMLElement;
+            element.style.fontSize = `${fontSize}px`;
         });
+
+        // Save font size to localStorage
+        localStorage.setItem('reader-font-size', fontSize.toString());
     }, [fontSize]);
 
     const handleShare = async () => {
@@ -75,13 +90,27 @@ export function FloatingActionBar({
             }
         } else {
             // Fallback: copy to clipboard
-            navigator.clipboard.writeText(window.location.href);
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                // You could add a toast notification here
+                console.log('URL copied to clipboard');
+            } catch (error) {
+                console.error('Failed to copy URL');
+            }
         }
         setIsExpanded(false);
     };
 
     const handlePrint = () => {
-        window.print();
+        // Add print-friendly styles temporarily
+        document.body.classList.add('print-mode');
+
+        // Small delay to ensure styles are applied
+        setTimeout(() => {
+            window.print();
+            document.body.classList.remove('print-mode');
+        }, 100);
+
         setIsExpanded(false);
     };
 
@@ -91,11 +120,15 @@ export function FloatingActionBar({
     };
 
     const increaseFontSize = () => {
-        if (fontSize < 24) setFontSize(prev => prev + 2);
+        if (fontSize < 24) {
+            setFontSize(prev => Math.min(24, prev + 2));
+        }
     };
 
     const decreaseFontSize = () => {
-        if (fontSize > 12) setFontSize(prev => prev - 2);
+        if (fontSize > 12) {
+            setFontSize(prev => Math.max(12, prev - 2));
+        }
     };
 
     const toggleTheme = () => {
@@ -140,7 +173,7 @@ export function FloatingActionBar({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 100 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:block"
+                        className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:block no-print"
                     >
                         <Card className="bg-background/80 backdrop-blur-md border border-divider shadow-lg">
                             <CardBody className="p-2">
@@ -152,7 +185,6 @@ export function FloatingActionBar({
                                             variant="flat"
                                             size="sm"
                                             onPress={() => setIsExpanded(!isExpanded)}
-                                            className=""
                                         >
                                             {isExpanded ? <TbX size={18} /> : <TbMenu2 size={18} />}
                                         </Button>
@@ -167,7 +199,7 @@ export function FloatingActionBar({
                                                 transition={{ duration: 0.2 }}
                                                 className="flex flex-col gap-1"
                                             >
-                                                <Divider className="my-1.5"/>
+                                                <Divider className="my-1.5" />
 
                                                 {/* Font size controls */}
                                                 <div className="flex flex-col gap-1 mb-2 pb-2 border-b border-divider">
@@ -225,36 +257,28 @@ export function FloatingActionBar({
                         </Card>
                     </motion.div>
 
-                    {/* Mobile - Horizontal at the bottom */}
+                    {/* Mobile - Bottom floating */}
                     <motion.div
                         initial={{ opacity: 0, y: 100 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 100 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed bottom-6 right-6 z-40 lg:hidden"
+                        className="fixed bottom-6 right-6 z-40 lg:hidden no-print"
                     >
-                        <Card className="bg-background/90 backdrop-blur-md border border-divider shadow-lg">
+                        <Card className="bg-background/80 backdrop-blur-md border border-divider shadow-lg">
                             <CardBody className="p-2">
-                                <div className="flex items-center gap-1">
-                                    {/* Quick actions always visible on mobile */}
-                                    <Button
-                                        isIconOnly
-                                        variant="flat"
-                                        size="sm"
-                                        onPress={scrollToTop}
-                                    >
-                                        <TbArrowUp size={18} />
-                                    </Button>
-
-                                    <Button
-                                        isIconOnly
-                                        variant="flat"
-                                        size="sm"
-                                        onPress={handleShare}
-                                        color="primary"
-                                    >
-                                        <TbShare size={18} />
-                                    </Button>
+                                <div className="flex gap-1">
+                                    {/* Scroll to top button - always visible on mobile */}
+                                    <Tooltip content="Scroll to top" placement="top">
+                                        <Button
+                                            isIconOnly
+                                            variant="flat"
+                                            size="sm"
+                                            onPress={scrollToTop}
+                                        >
+                                            <TbArrowUp size={18} />
+                                        </Button>
+                                    </Tooltip>
 
                                     {/* More options in popover */}
                                     <Popover placement="top" offset={10}>

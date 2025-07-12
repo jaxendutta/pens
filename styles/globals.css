@@ -30,6 +30,32 @@
 .content-area {
     line-height: 1.8;
     font-size: 1.125rem;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+/* Typography improvements */
+.content-area h1,
+.content-area h2,
+.content-area h3,
+.content-area h4,
+.content-area h5,
+.content-area h6 {
+    margin-top: 3rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.content-area h1:first-child,
+.content-area h2:first-child,
+.content-area h3:first-child {
+    margin-top: 0 !important;
+}
+
+.content-area p {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
 }
 
 .content-area img {
@@ -67,9 +93,68 @@
     margin: 3rem 0;
 }
 
+/* Table of Contents Styles */
+.table-of-contents {
+    background: hsl(var(--nextui-default-50));
+    border: 1px solid hsl(var(--nextui-divider));
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.table-of-contents h3 {
+    margin: 0 0 1rem 0 !important;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--nextui-foreground));
+}
+
+.table-of-contents ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.table-of-contents li {
+    margin: 0.5rem 0;
+}
+
+.table-of-contents a {
+    color: hsl(var(--nextui-foreground));
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.table-of-contents a:hover {
+    background: hsl(var(--nextui-primary-100));
+    color: hsl(var(--nextui-primary));
+}
+
+.table-of-contents .toc-level-1 {
+    font-weight: 600;
+}
+
+.table-of-contents .toc-level-2 {
+    margin-left: 1rem;
+    font-size: 0.95rem;
+}
+
+.table-of-contents .toc-level-3 {
+    margin-left: 2rem;
+    font-size: 0.9rem;
+    color: hsl(var(--nextui-default-600));
+}
+
 /* Dark mode content styles */
 .dark .content-area th {
     background: hsl(var(--nextui-default-200));
+}
+
+.dark .table-of-contents {
+    background: hsl(var(--nextui-default-100));
 }
 
 /* Scrollbar styles */
@@ -102,81 +187,124 @@
         display: none !important;
     }
 
-    .prose {
-        font-size: 12pt;
-        line-height: 1.5;
+    /* Hide UI elements during print */
+    .floating-action-bar,
+    .reading-progress,
+    button,
+    .navbar,
+    .footer,
+    nav {
+        display: none !important;
     }
 
-    .prose h1,
-    .prose h2,
-    .prose h3 {
+    /* Optimize content for print */
+    .content-area {
+        font-size: 11pt !important;
+        line-height: 1.4 !important;
+        text-align: justify;
+        color: black !important;
+        background: white !important;
+    }
+
+    .content-area h1,
+    .content-area h2,
+    .content-area h3 {
+        page-break-after: avoid;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+        color: black !important;
+    }
+
+    .content-area h1 {
+        font-size: 18pt !important;
+        border-bottom: 2px solid black;
+        padding-bottom: 0.5rem;
+    }
+
+    .content-area h2 {
+        font-size: 14pt !important;
+        border-bottom: 1px solid #666;
+        padding-bottom: 0.25rem;
+    }
+
+    .content-area h3 {
+        font-size: 12pt !important;
+    }
+
+    .content-area p {
+        margin-bottom: 0.75rem !important;
+        orphans: 3;
+        widows: 3;
+        text-align: justify;
+    }
+
+    .content-area blockquote {
+        border-left: 3px solid black !important;
+        background: #f5f5f5 !important;
+        margin: 1rem 0 !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .content-area img {
+        max-width: 100% !important;
+        height: auto !important;
+        margin: 1rem auto !important;
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+    }
+
+    .content-area table {
+        border: 2px solid black !important;
+        page-break-inside: avoid;
+    }
+
+    .content-area th,
+    .content-area td {
+        border: 1px solid black !important;
+        padding: 0.5rem !important;
+    }
+
+    .content-area th {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+
+    /* Table of contents for print */
+    .table-of-contents {
+        background: #f8f8f8 !important;
+        border: 2px solid black !important;
+        margin: 1rem 0 2rem 0 !important;
         page-break-after: avoid;
     }
 
-    .prose p {
-        orphans: 3;
-        widows: 3;
-    }
-}
-
-/* Animation utilities */
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    .table-of-contents h3 {
+        color: black !important;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
+    .table-of-contents a {
+        color: black !important;
+        text-decoration: underline !important;
     }
 
-    to {
-        opacity: 1;
+    /* Print header/footer info */
+    @page {
+        margin: 1in;
+
+        @top-right {
+            content: counter(page);
+        }
+
+        @bottom-left {
+            content: attr(data-title);
+        }
     }
-}
 
-.animate-slide-in-up {
-    animation: slideInUp 0.6s ease-out;
-}
+    /* Page breaks */
+    .page-break {
+        page-break-before: always;
+    }
 
-.animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
-}
-
-/* Line clamp utility */
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Glass morphism effect */
-.glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Enhanced focus styles for better accessibility */
-.focus-ring {
-    transition: all 0.2s ease-in-out;
-}
-
-.focus-ring:focus-visible {
-    outline: 2px solid hsl(var(--nextui-primary));
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px hsl(var(--nextui-primary) / 0.2);
+    .avoid-break {
+        page-break-inside: avoid;
+    }
 }
