@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Modal,
     ModalContent,
@@ -108,6 +108,7 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                         placeholder="Enter the password"
                         value={password}
                         onValueChange={setPassword}
+                        onKeyDown={handleKeyPress}
                         type={isVisible ? "text" : "password"}
                         isInvalid={!!error}
                         errorMessage={error}
