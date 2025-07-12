@@ -110,7 +110,7 @@ export function ContentGrid({ items, type, title, description }: ContentGridProp
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-8"
             >
                 {filteredItems.length === 0 ? (
                     items.length === 0 ? (

@@ -9,6 +9,7 @@ import {
   Chip
 } from "@heroui/react";
 import NextLink from 'next/link';
+import Image from 'next/image';
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
@@ -18,6 +19,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center min-h-[80vh] px-4">
         <div className="text-center max-w-4xl">
+          {/* Logo */}
+          <Image src="/favicon.png" alt="Logo" width={100} height={100} className="mx-auto mb-4" />
+
           <Chip color="primary" variant="flat" className="mb-4">
             <GithubIcon size={20} className="inline-block mr-2" />
             <NextLink href={siteConfig.links.github}>jaxendutta/pens</NextLink>

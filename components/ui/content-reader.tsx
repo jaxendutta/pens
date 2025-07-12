@@ -25,6 +25,7 @@ import {
     TbLock,
     TbLockOpen,
     TbAccessible,
+    TbExternalLink,
 } from "react-icons/tb";
 import { ContentItem } from '@/lib/types';
 import { formatDate } from '@/lib/content';
@@ -50,22 +51,47 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [imageError, setImageError] = useState(false);
+    const [coverImagePath, setCoverImagePath] = useState<string>('');
+    const [imageExtensionIndex, setImageExtensionIndex] = useState(0);
 
     const { isOpen: isAccessibilityOpen, onOpen: onAccessibilityOpen, onOpenChange: onAccessibilityOpenChange } = useDisclosure();
 
     const isPieces = type === 'pieces';
     const isProtected = Boolean(content.password);
 
-    const coverImagePath = `/${type}/${content.slug}.jpg`;
+    // Try different image extensions
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-    const metadata: { icon: JSX.Element; text: string }[] = [
-        { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
-        { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
-        { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
-        ...(content.chapters && content.chapters > 0 ? [{ icon: <TbBook size={14} />, text: `${content.chapters} ${content.chapters === 1 ? 'chapter' : 'chapters'}` }] : []),
-        ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
-    ];
+    // Set initial image path
+    useEffect(() => {
+        const initialPath = `/${type}/${content.slug}.${imageExtensions[0]}`;
+        console.log(`Setting initial image path: ${initialPath}`);
+        setCoverImagePath(initialPath);
+        setImageExtensionIndex(0);
+        setImageError(false);
+    }, [content.slug, type]);
 
+    // Handle image load failure - try next extension
+    const handleImageError = () => {
+        const nextIndex = imageExtensionIndex + 1;
+
+        console.log(`Image failed to load: ${coverImagePath}`);
+        console.log(`Trying next extension (${nextIndex}/${imageExtensions.length})`);
+
+        if (nextIndex < imageExtensions.length) {
+            // Try next extension
+            const nextPath = `/${type}/${content.slug}.${imageExtensions[nextIndex]}`;
+            console.log(`Trying: ${nextPath}`);
+            setCoverImagePath(nextPath);
+            setImageExtensionIndex(nextIndex);
+        } else {
+            // No more extensions to try
+            console.log('No more image extensions to try');
+            setImageError(true);
+        }
+    };
+
+    // Track authentication state
     useEffect(() => {
         // Check if user has already authenticated for this content
         const hasAccess = sessionStorage.getItem(`access_${type}_${content.slug}`) === 'granted';
@@ -75,6 +101,14 @@ export function ContentReader({ content, type }: ContentReaderProps) {
             setShowPasswordModal(true);
         }
     }, [content.slug, isProtected, type]);
+
+    const metadata: { icon: JSX.Element; text: string }[] = [
+        { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
+        { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
+        { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
+        ...(content.chapters && content.chapters > 0 ? [{ icon: <TbBook size={14} />, text: `${content.chapters} ${content.chapters === 1 ? 'chapter' : 'chapters'}` }] : []),
+        ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
+    ];
 
     if (!isAuthenticated) {
         return (
@@ -198,24 +232,31 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 ))}
                             </div>
 
-                            {/* Cover Image - only show if no error and file might exist */}
-                            {!imageError && (
-                                <div className="w-full mb-6 relative">
-                                    <Image
+                            {/* Cover Image */}
+                            {!imageError && coverImagePath && (
+                                <div className="w-full mb-6 relative group">
+                                    <img
                                         src={coverImagePath}
                                         alt={`Cover image for ${content.title}`}
                                         className="w-full h-auto rounded-lg object-cover"
-                                        onError={() => setImageError(true)}
-                                        fallbackSrc="/images/default-cover.jpg"
+                                        onLoad={() => console.log(`Image loaded successfully: ${coverImagePath}`)}
+                                        onError={handleImageError}
                                     />
+
+                                    {/* Image credit overlay */}
                                     {content.imageCredit && (
-                                        <Link
-                                            href={content.imageCreditUrl || '#'}
-                                            className="absolute bottom-2 right-2 text-xs bg-black/50 text-white px-2 py-1 rounded hover:bg-black/70 transition-colors"
-                                            isExternal={!!content.imageCreditUrl}
-                                        >
-                                            © {content.imageCredit}
-                                        </Link>
+                                        <div className="absolute bottom-3 right-3 z-10">
+                                            <Link
+                                                href={content.imageCreditUrl || '#'}
+                                                className="text-xs bg-black/75 text-white px-3 py-1.5 rounded-full hover:bg-black/90 transition-all duration-200 backdrop-blur-sm flex items-center gap-1.5 shadow-lg"
+                                                isExternal={!!content.imageCreditUrl}
+                                            >
+                                                <span>© {content.imageCredit}</span>
+                                                {content.imageCreditUrl && (
+                                                    <TbExternalLink size={12} className="flex-shrink-0" />
+                                                )}
+                                            </Link>
+                                        </div>
                                     )}
                                 </div>
                             )}

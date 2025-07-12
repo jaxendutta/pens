@@ -38,8 +38,10 @@ export async function getContent(
             password: data.password || null,
             readingTime,
             wordCount,
-            chapters: data.chapters || chapters, // Use frontmatter chapters or auto-calculated
+            chapters: data.chapters || chapters,
             location: data.location || null,
+            imageCredit: data.imageCredit || undefined,
+            imageCreditUrl: data.imageCreditUrl || undefined,
         };
     } catch (error) {
         throw new Error(`Failed to load content: ${slug}`);

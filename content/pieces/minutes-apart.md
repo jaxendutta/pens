@@ -7,6 +7,8 @@ date: "2025-07-08"
 lastRevision: "2025-07-12"
 excerpt: "A tale of two fawns."
 password: "minutes"
+imageCredit: "Anas Abdin"
+imageCreditUrl: "https://www.reddit.com/r/Ethiopia/comments/t0ddh5/hey_ethiopia_i_drew_this_pixel_art_scene_using_6/"
 ---
 
 # Born Minutes Apart
