@@ -1,8 +1,6 @@
-'use client';
-
 import { notFound } from 'next/navigation';
-import { getContent, getContentList } from '@/lib/content';
-import { ContentReader } from '@/components/ContentReader';
+import { getContent, getContentList } from '@/lib/content-server';
+import { ContentReader } from '@/components/ui/content-reader';
 
 interface PageProps {
     params: { slug: string };
