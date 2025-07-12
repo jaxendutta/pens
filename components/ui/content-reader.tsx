@@ -156,6 +156,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                     color={isPieces ? 'primary' : 'secondary'}
                                     variant="flat"
                                     startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
+                                    className="pl-3 pr-1"
                                 >
                                     {isPieces ? 'Story' : 'Poem'}
                                 </Chip>
@@ -165,6 +166,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                         color="success"
                                         variant="flat"
                                         startContent={<TbLockOpen size={16} />}
+                                        className="pl-3 pr-1"
                                     >
                                         Authenticated
                                     </Chip>
@@ -177,6 +179,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                         variant="bordered"
                                         size="sm"
                                         startContent={<TbTag size={14} />}
+                                        className="pl-3 pr-1"
                                     >
                                         {tag}
                                     </Chip>
@@ -205,6 +208,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                         color="primary"
                                         variant="flat"
                                         startContent={item.icon}
+                                        className="pl-3 pr-1"
                                     >
                                         {item.text}
                                     </Chip>
@@ -231,14 +235,8 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                         <Divider />
 
-                        <CardFooter className="p-8">
-                            <div className="text-sm text-default-600 w-full">
-                                {content.lastRevision !== content.date ? (
-                                    <span>Last updated: {formatDate(content.lastRevision)}</span>
-                                ) : (
-                                    <span>Published: {formatDate(content.date)}</span>
-                                )}
-                            </div>
+                        <CardFooter className="p-8 w-full justify-center">
+                            🌼🌼🌼
                         </CardFooter>
                     </Card>
                 </motion.div>
