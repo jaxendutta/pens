@@ -7,6 +7,8 @@ date: "2025-06-20"
 lastRevision: "2025-06-25"
 excerpt: "Wasted sap."
 password: "songs"
+imageCredit:
+imageCreditUrl:
 ---
 
 # The Vine That Strangled
