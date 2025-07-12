@@ -99,6 +99,7 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
     }, [filteredItems, onFilter]);
 
     const handleSearchChange = (value: string) => {
+        console.log('Search filter changed:', value);
         setFilters(prev => ({ ...prev, query: value }));
     };
 
@@ -144,6 +145,8 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
                     startContent={<BiSearch className="text-default-400" />}
                     className="flex-1"
                     size="lg"
+                    autoComplete="off"
+                    data-form-type="other"
                 />
 
                 <div className="flex gap-2">

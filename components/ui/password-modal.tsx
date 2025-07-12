@@ -108,21 +108,7 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                         placeholder="Enter the password"
                         value={password}
                         onValueChange={setPassword}
-                        onKeyPress={handleKeyPress}
                         type={isVisible ? "text" : "password"}
-                        endContent={
-                            <button
-                                className="focus:outline-none"
-                                type="button"
-                                onClick={() => setIsVisible(!isVisible)}
-                            >
-                                {isVisible ? (
-                                    <TbEyeOff className="text-2xl text-default-400 pointer-events-none" />
-                                ) : (
-                                    <TbEye className="text-2xl text-default-400 pointer-events-none" />
-                                )}
-                            </button>
-                        }
                         isInvalid={!!error}
                         errorMessage={error}
                         autoFocus

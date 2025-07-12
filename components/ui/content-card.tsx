@@ -58,6 +58,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
         { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
         { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
         ...(content.chapters ? [{ icon: <TbBook2 size={14} />, text: `${content.chapters} chapters` }] : []),
+        ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
     ]
 
     return (
@@ -66,21 +67,21 @@ export function ContentCard({ content, type }: ContentCardProps) {
                 variants={cardVariants}
                 initial="hidden"
                 animate="visible"
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
                 className="h-full"
             >
-                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 hover:border-primary/20">
-                    <CardHeader className="pb-3 pt-6 px-6 flex-col items-start">
+                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 border-1 hover:border-primary/20">
+                    <CardBody className="p-6">
                         {/* Status badges */}
                         <div className="flex gap-2 mb-3 flex-wrap">
                             <Chip
                                 color={isPiece ? 'primary' : 'secondary'}
                                 variant="flat"
                                 size="sm"
-                                startContent={isPiece ? <TbBook2 size={12} /> : <TbSparkles size={12} />}
-                                className="px-1.5"
+                                startContent={isPiece ? <TbBook2 size={14} /> : <TbSparkles size={14} />}
+                                className="pl-1.5 pr-1"
                             >
-                                {isPiece ? 'Piece' : 'Poem'}
+                                {isPiece ? 'Story' : 'Poem'}
                             </Chip>
 
                             {content.isProtected && (
@@ -88,8 +89,8 @@ export function ContentCard({ content, type }: ContentCardProps) {
                                     color="warning"
                                     variant="flat"
                                     size="sm"
-                                    startContent={<TbLock size={12} />}
-                                    className="px-1.5"
+                                    startContent={<TbLock size={14} />}
+                                    className="pl-1.5 pr-1"
                                 >
                                     Protected
                                 </Chip>
@@ -109,37 +110,34 @@ export function ContentCard({ content, type }: ContentCardProps) {
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-bold text-xl leading-tight mb-2 group-hover:text-primary transition-colors">
+                        <h4 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">
                             {content.title}
                         </h4>
 
-                        {content.location && (
-                            <div className="flex items-center gap-1 text-xs text-default-500">
-                                <TbMapPin size={12} />
-                                {content.location}
-                            </div>
-                        )}
-                    </CardHeader>
-
-                    <CardBody className="px-6 py-3">
-                        <p className="text-sm text-default-700 leading-relaxed mb-4 line-clamp-3">
+                        {/* Excerpt */}
+                        <p className="py-4 text-sm text-default-700 leading-relaxed line-clamp-3">
                             {content.excerpt}
                         </p>
 
                         {/* Metadata */}
-                        <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="flex flex-wrap gap-2">
                             {metadata.map((item, index) => (
-                                <div key={index} className="flex items-center gap-1.5 text-default-600">
-                                    {item.icon}
-                                    <span>{item.text}</span>
-                                </div>
+                                <Chip
+                                    key={index}
+                                    color="primary"
+                                    variant="flat"
+                                    className="flex items-center pl-2 pr-1"
+                                    startContent={item.icon}
+                                >
+                                    {item.text}
+                                </Chip>
                             ))}
                         </div>
                     </CardBody>
 
                     <Divider />
 
-                    <CardFooter className="p-4">
+                    <CardFooter className="px-6 py-4">
                         {content.isProtected ? (
                             <Button
                                 color="warning"
@@ -161,7 +159,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
                                 startContent={<TbEye size={16} />}
                                 className="font-medium group-hover:shadow-md transition-shadow"
                             >
-                                Read {isPiece ? 'Story' : 'Poem'}
+                                Read
                             </Button>
                         )}
                     </CardFooter>

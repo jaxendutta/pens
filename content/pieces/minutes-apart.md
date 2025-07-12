@@ -6,7 +6,7 @@ location: "Ottawa, Ontario, Canada"
 date: "2025-07-08"
 lastRevision: "2025-07-12"
 excerpt: "A tale of two fawns."
-password: ""
+password: "minutes"
 ---
 
 ## Born Minutes Apart

@@ -156,7 +156,27 @@ async function processMarkdownWithNumbering(content: string): Promise<string> {
         .use(html)
         .process(numberedContent);
 
-    return processedMarkdown.toString();
+    let htmlContent = processedMarkdown.toString();
+
+    // Replace HTML headings with Tailwind-styled versions
+    htmlContent = htmlContent
+        .replace(/<h1([^>]*)>(.*?)<\/h1>/g, '<h1 class="text-3xl lg:text-4xl font-bold text-foreground mb-6 mt-8 pb-3 border-b-2 border-divider scroll-mt-24"$1>$2</h1>')
+        .replace(/<h2([^>]*)>(.*?)<\/h2>/g, '<h2 class="text-2xl lg:text-3xl font-bold text-foreground mb-4 mt-6 pb-2 border-b border-divider scroll-mt-24"$1>$2</h2>')
+        .replace(/<h3([^>]*)>(.*?)<\/h3>/g, '<h3 class="text-xl lg:text-2xl font-semibold text-foreground mb-3 mt-5 scroll-mt-24"$1>$2</h3>')
+        .replace(/<h4([^>]*)>(.*?)<\/h4>/g, '<h4 class="text-lg lg:text-xl font-semibold text-foreground mb-3 mt-4 scroll-mt-24"$1>$2</h4>')
+        .replace(/<h5([^>]*)>(.*?)<\/h5>/g, '<h5 class="text-base lg:text-lg font-semibold text-foreground mb-2 mt-3 scroll-mt-24"$1>$2</h5>')
+        .replace(/<h6([^>]*)>(.*?)<\/h6>/g, '<h6 class="text-sm lg:text-base font-semibold text-foreground mb-2 mt-3 scroll-mt-24"$1>$2</h6>')
+        // Also style paragraphs and other elements
+        .replace(/<p>/g, '<p class="mb-4 leading-relaxed text-foreground">')
+        .replace(/<blockquote>/g, '<blockquote class="border-l-4 border-primary pl-6 py-4 my-6 italic bg-default-50 rounded-r-lg">')
+        .replace(/<ul>/g, '<ul class="list-disc list-inside mb-4 space-y-2">')
+        .replace(/<ol>/g, '<ol class="list-decimal list-inside mb-4 space-y-2">')
+        .replace(/<li>/g, '<li class="leading-relaxed text-foreground">')
+        .replace(/<code>/g, '<code class="bg-default-100 text-primary px-1.5 py-0.5 rounded text-sm font-mono">')
+        .replace(/<pre>/g, '<pre class="bg-default-100 p-4 rounded-lg overflow-x-auto my-4">')
+        .replace(/<a\s+([^>]*href="[^"]*")([^>]*)>/g, '<a class="text-primary hover:text-primary-600 underline underline-offset-2 transition-colors" $1$2>');
+
+    return htmlContent;
 }
 
 export function generateTableOfContents(content: string): Array<{ id: string, title: string, level: number }> {
