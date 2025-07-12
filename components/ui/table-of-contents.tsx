@@ -1,16 +1,24 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Card, CardBody, Button, Progress, Divider } from "@heroui/react";
+import { Card, CardBody, Button, Progress, Divider, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from 'next-themes';
 import {
     TbList,
     TbChevronUp,
     TbChevronDown,
-    TbX,
-    TbMenu2,
     TbAccessible,
     TbArrowUp,
+    TbMenu2,
+    TbShare,
+    TbPrinter,
+    TbPalette,
+    TbCopy,
+    TbFileText,
+    TbPlus,
+    TbMinus,
+    TbX,
 } from "react-icons/tb";
 
 interface TocItem {
@@ -23,12 +31,14 @@ interface TableOfContentsProps {
     content: string;
     className?: string;
     onAccessibilityClick?: () => void;
+    contentTitle?: string;
 }
 
 export function TableOfContents({
     content,
     className = "",
-    onAccessibilityClick
+    onAccessibilityClick,
+    contentTitle
 }: TableOfContentsProps) {
     const [tocItems, setTocItems] = useState<TocItem[]>([]);
     const [activeId, setActiveId] = useState<string>('');
@@ -37,7 +47,9 @@ export function TableOfContents({
     const [isVisible, setIsVisible] = useState(false);
     const [readingProgress, setReadingProgress] = useState(0);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [fontSize, setFontSize] = useState(16);
 
+    const { theme, setTheme } = useTheme();
     const observerRef = useRef<IntersectionObserver | null>(null);
     const tocRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +64,29 @@ export function TableOfContents({
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // Load font size from localStorage on mount
+    useEffect(() => {
+        const savedFontSize = localStorage.getItem('reader-font-size');
+        if (savedFontSize) {
+            const size = parseInt(savedFontSize);
+            if (size >= 10 && size <= 36) {
+                setFontSize(size);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        // Apply font size to content areas
+        const contentElements = document.querySelectorAll('.content-area');
+        contentElements.forEach(el => {
+            const element = el as HTMLElement;
+            element.style.fontSize = `${fontSize}px`;
+        });
+
+        // Save font size to localStorage
+        localStorage.setItem('reader-font-size', fontSize.toString());
+    }, [fontSize]);
 
     // Calculate reading progress and visibility
     useEffect(() => {
@@ -200,9 +235,134 @@ export function TableOfContents({
         setIsCollapsed(!isCollapsed);
     };
 
+    const increaseFontSize = () => {
+        if (fontSize < 24) {
+            setFontSize(prev => Math.min(24, prev + 2));
+        }
+    };
+
+    const decreaseFontSize = () => {
+        if (fontSize > 12) {
+            setFontSize(prev => Math.max(12, prev - 2));
+        }
+    };
+
+    const toggleTheme = () => {
+        setTheme(theme === 'light' ? 'dark' : 'light');
+    };
+
+    const handleShare = async () => {
+        if (navigator.share && contentTitle) {
+            try {
+                await navigator.share({
+                    title: contentTitle,
+                    url: window.location.href,
+                });
+            } catch (error) {
+                console.log('Share cancelled');
+            }
+        } else {
+            // Fallback: copy to clipboard
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                // You could add a toast notification here
+                console.log('URL copied to clipboard');
+            } catch (error) {
+                console.error('Failed to copy URL');
+            }
+        }
+    };
+
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            console.log('URL copied to clipboard');
+        } catch (error) {
+            console.error('Failed to copy URL');
+        }
+    };
+
+    const handleCopyText = async () => {
+        try {
+            const contentElement = document.querySelector('.content-area');
+            if (contentElement) {
+                const textContent = contentElement.textContent || '';
+                await navigator.clipboard.writeText(textContent);
+                console.log('Content copied to clipboard');
+            }
+        } catch (error) {
+            console.error('Failed to copy content');
+        }
+    };
+
+    const handlePrint = () => {
+        // Add print-friendly styles temporarily
+        document.body.classList.add('print-mode');
+
+        // Small delay to ensure styles are applied
+        setTimeout(() => {
+            window.print();
+            document.body.classList.remove('print-mode');
+        }, 100);
+    };
+
     if (tocItems.length === 0) {
         return null;
     }
+
+    // Actions Menu Component
+    const ActionsMenu = ({ isMobile: mobile }: { isMobile: boolean }) => (
+        <Popover placement={mobile ? "bottom" : "bottom-end"} offset={10}>
+            <PopoverTrigger>
+                <Button
+                    isIconOnly
+                    size="sm"
+                    variant="flat"
+                    aria-label="More actions"
+                >
+                    <TbMenu2 size={16} />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 gap-2">
+                <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={handleShare}
+                    startContent={<TbShare size={16} />}
+                    fullWidth
+                >
+                    Share
+                </Button>
+                <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={handleCopyLink}
+                    startContent={<TbCopy size={16} />}
+                    fullWidth
+                >
+                    Copy Link
+                </Button>
+                <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={handleCopyText}
+                    startContent={<TbFileText size={16} />}
+                    fullWidth
+                >
+                    Copy Text
+                </Button>
+                <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={handlePrint}
+                    startContent={<TbPrinter size={16} />}
+                    fullWidth
+                >
+                    Print
+                </Button>
+            </PopoverContent>
+        </Popover>
+    );
 
     // Mobile floating ToC
     if (isMobile) {
@@ -251,6 +411,7 @@ export function TableOfContents({
                                         >
                                             <TbArrowUp size={16} />
                                         </Button>
+                                        <ActionsMenu isMobile={true} />
                                         <Button
                                             isIconOnly
                                             size="sm"
@@ -361,6 +522,7 @@ export function TableOfContents({
                                     >
                                         <TbArrowUp size={16} />
                                     </Button>
+                                    <ActionsMenu isMobile={false} />
                                     <Button
                                         isIconOnly
                                         size="sm"

@@ -29,7 +29,6 @@ import {
 import { ContentItem } from '@/lib/types';
 import { formatDate } from '@/lib/content';
 import { PasswordModal } from './password-modal';
-import { FloatingActionBar } from './floating-action-bar';
 import { TableOfContents } from './table-of-contents';
 import { AccessibilityPanel } from './accessibility-panel';
 
@@ -50,7 +49,6 @@ const fadeInVariants = {
 export function ContentReader({ content, type }: ContentReaderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [estimatedReadTime, setEstimatedReadTime] = useState(0);
     const [imageError, setImageError] = useState(false);
 
     const { isOpen: isAccessibilityOpen, onOpen: onAccessibilityOpen, onOpenChange: onAccessibilityOpenChange } = useDisclosure();
@@ -76,17 +74,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
         if (isProtected && !hasAccess) {
             setShowPasswordModal(true);
         }
-
-        // Calculate reading progress based on scroll
-        const updateReadTime = () => {
-            const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            const timeElapsed = (scrollPercent / 100) * content.readingTime;
-            setEstimatedReadTime(Math.round(timeElapsed));
-        };
-
-        window.addEventListener('scroll', updateReadTime);
-        return () => window.removeEventListener('scroll', updateReadTime);
-    }, [content.slug, content.readingTime, isProtected, type]);
+    }, [content.slug, isProtected, type]);
 
     if (!isAuthenticated) {
         return (
@@ -124,22 +112,17 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     return (
         <div className="min-h-screen">
-            {/* Sticky ToC with accessibility integration */}
+            {/* Sticky ToC with all actions integrated */}
             <TableOfContents
                 content={content.content}
                 onAccessibilityClick={onAccessibilityOpen}
+                contentTitle={content.title}
             />
 
             {/* Accessibility Panel */}
             <AccessibilityPanel
                 isOpen={isAccessibilityOpen}
                 onOpenChange={onAccessibilityOpenChange}
-            />
-
-            <FloatingActionBar
-                contentTitle={content.title}
-                contentUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                showReadingProgress={true}
             />
 
             {/* Main content with proper spacing for sidebar */}
