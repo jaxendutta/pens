@@ -59,7 +59,6 @@ export function ContentCard({ content, type }: ContentCardProps) {
         { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
         { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
         ...(content.chapters ? [{ icon: <TbBook2 size={14} />, text: `${content.chapters} chapters` }] : []),
-        ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
     ]
 
     return (

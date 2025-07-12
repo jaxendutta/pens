@@ -1,67 +1,62 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
     Input,
     Select,
     SelectItem,
     Button,
     Chip,
-    Card,
-    CardBody,
+    Divider,
 } from "@heroui/react";
-import { BiSearch, BiSort, BiFilter, BiX } from "react-icons/bi";
-import { TbSortAscending, TbSortDescending } from "react-icons/tb";
-import { ContentMeta, SearchFilters } from '@/lib/types';
+import { BiSearch, BiSort, BiSortUp, BiSortDown, BiX } from "react-icons/bi";
+import { ContentType } from '@/lib/types';
 
-interface SearchFilterProps {
-    items: ContentMeta[];
-    onFilter: (filteredItems: ContentMeta[]) => void;
-    type: 'pieces' | 'poems';
+interface FilterOptions {
+    query: string;
+    sortBy: 'date' | 'title' | 'wordCount' | 'readingTime';
+    sortOrder: 'asc' | 'desc';
+    tags?: string[];
 }
 
-export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
-    const [filters, setFilters] = useState<SearchFilters>({
+interface SearchFilterProps {
+    items: any[];
+    onFilter: (filteredItems: any[]) => void;
+    type: ContentType;
+    availableTags?: string[];
+}
+
+export function SearchFilter({ items, onFilter, type, availableTags = [] }: SearchFilterProps) {
+    const [filters, setFilters] = useState<FilterOptions>({
         query: '',
         sortBy: 'date',
         sortOrder: 'desc',
         tags: [],
     });
 
-    const [showFilters, setShowFilters] = useState(false);
-
-    // Get all unique tags from items
-    const availableTags = useMemo(() => {
-        const allTags = items.flatMap(item => item.tags || []);
-        return Array.from(new Set(allTags)).sort();
-    }, [items]);
-
-    // Filter and sort items
     const filteredItems = useMemo(() => {
         let result = [...items];
 
-        // Text search
+        // Apply search query
         if (filters.query) {
             const query = filters.query.toLowerCase();
             result = result.filter(item =>
                 item.title.toLowerCase().includes(query) ||
-                item.author.toLowerCase().includes(query) ||
                 item.excerpt.toLowerCase().includes(query) ||
-                (item.location && item.location.toLowerCase().includes(query)) ||
-                (item.tags && item.tags.some(tag => tag.toLowerCase().includes(query)))
+                (item.tags && item.tags.some((tag: string) => tag.toLowerCase().includes(query)))
             );
         }
 
-        // Tag filter
+        // Apply tag filters
         if (filters.tags && filters.tags.length > 0) {
             result = result.filter(item =>
-                item.tags && filters.tags!.some(tag => item.tags!.includes(tag))
+                item.tags && filters.tags?.some(tag => item.tags.includes(tag))
             );
         }
 
-        // Sort
+        // Apply sorting
         result.sort((a, b) => {
-            let aValue: any, bValue: any;
+            let aValue, bValue;
 
             switch (filters.sortBy) {
                 case 'title':
@@ -78,8 +73,8 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
                     break;
                 case 'date':
                 default:
-                    aValue = new Date(a.date);
-                    bValue = new Date(b.date);
+                    aValue = new Date(a.date).getTime();
+                    bValue = new Date(b.date).getTime();
                     break;
             }
 
@@ -93,8 +88,8 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
         return result;
     }, [items, filters]);
 
-    // Update parent component when filters change
-    useMemo(() => {
+    // Use useEffect instead of useMemo to avoid setState during render
+    useEffect(() => {
         onFilter(filteredItems);
     }, [filteredItems, onFilter]);
 
@@ -139,10 +134,10 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
             {/* Main search and controls */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <Input
-                    placeholder={`Search ${type}...`}
+                    placeholder={`Search`}
                     value={filters.query}
                     onValueChange={handleSearchChange}
-                    startContent={<BiSearch className="text-default-400" />}
+                    startContent={<BiSearch size={20} className="text-default-400" />}
                     className="flex-1"
                     size="lg"
                     autoComplete="off"
@@ -155,7 +150,7 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
                         onSelectionChange={(keys) => handleSortChange(Array.from(keys)[0] as string)}
                         className="min-w-40"
                         size="lg"
-                        startContent={<BiSort className="text-default-400" />}
+                        startContent={<BiSort size={20} className="text-default-400" />}
                     >
                         <SelectItem key="date">Date</SelectItem>
                         <SelectItem key="title">Title</SelectItem>
@@ -168,91 +163,70 @@ export function SearchFilter({ items, onFilter, type }: SearchFilterProps) {
                         variant="flat"
                         onPress={handleSortOrderToggle}
                         size="lg"
-                        aria-label={`Sort ${filters.sortOrder === 'asc' ? 'ascending' : 'descending'}`}
+                        aria-label={`Sort ${filters.sortOrder === 'asc' ? 'descending' : 'ascending'}`}
                     >
-                        {filters.sortOrder === 'asc' ? <TbSortAscending size={20} /> : <TbSortDescending size={20} />}
-                    </Button>
-
-                    <Button
-                        isIconOnly
-                        variant="flat"
-                        onPress={() => setShowFilters(!showFilters)}
-                        size="lg"
-                        color={hasActiveFilters ? 'primary' : 'default'}
-                        aria-label="Toggle filters"
-                    >
-                        <BiFilter size={20} />
+                        {filters.sortOrder === 'asc' ? <BiSortUp /> : <BiSortDown />}
                     </Button>
                 </div>
             </div>
 
-            {/* Advanced filters */}
-            {showFilters && (
-                <Card>
-                    <CardBody className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">Filters</h3>
-                            {hasActiveFilters && (
-                                <Button
-                                    size="sm"
-                                    variant="flat"
-                                    onPress={clearFilters}
-                                    startContent={<BiX size={16} />}
-                                >
-                                    Clear All
-                                </Button>
-                            )}
-                        </div>
-
-                        {availableTags.length > 0 && (
-                            <div>
-                                <p className="text-sm font-medium mb-3">Tags</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {availableTags.map(tag => (
-                                        <Chip
-                                            key={tag}
-                                            variant={filters.tags?.includes(tag) ? "solid" : "bordered"}
-                                            color={filters.tags?.includes(tag) ? "primary" : "default"}
-                                            className="cursor-pointer"
-                                            onClick={() => handleTagToggle(tag)}
-                                        >
-                                            {tag}
-                                        </Chip>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </CardBody>
-                </Card>
-            )}
-
-            {/* Results summary */}
-            <div className="flex items-center justify-between text-sm text-default-600">
-                <span>
-                    {filteredItems.length} {type} {filteredItems.length === 1 ? 'found' : 'found'}
-                </span>
-
-                {hasActiveFilters && (
-                    <div className="flex items-center gap-2">
-                        <span>Active filters:</span>
-                        {filters.query && (
-                            <Chip size="sm" variant="flat" onClose={() => handleSearchChange('')}>
-                                "{filters.query}"
-                            </Chip>
-                        )}
-                        {filters.tags?.map(tag => (
+            {/* Tag filters */}
+            {availableTags.length > 0 && (
+                <div className="space-y-2">
+                    <p className="text-sm font-medium text-default-600">Filter by tags:</p>
+                    <div className="flex flex-wrap gap-2">
+                        {availableTags.map(tag => (
                             <Chip
                                 key={tag}
-                                size="sm"
-                                variant="flat"
-                                onClose={() => handleTagToggle(tag)}
+                                variant={filters.tags?.includes(tag) ? 'solid' : 'bordered'}
+                                color={filters.tags?.includes(tag) ? 'primary' : 'default'}
+                                onClose={filters.tags?.includes(tag) ? () => handleTagToggle(tag) : undefined}
+                                onClick={() => handleTagToggle(tag)}
+                                className="cursor-pointer hover:scale-105 transition-transform"
                             >
                                 {tag}
                             </Chip>
                         ))}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+
+            {/* Active filters and clear button */}
+            {hasActiveFilters && (
+                <>
+                    <Divider />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-default-600">
+                                Showing {filteredItems.length} of {items.length} {type}
+                            </span>
+                            {filters.tags && filters.tags.length > 0 && (
+                                <div className="flex gap-1">
+                                    {filters.tags.map(tag => (
+                                        <Chip
+                                            key={tag}
+                                            size="sm"
+                                            variant="flat"
+                                            color="primary"
+                                            onClose={() => handleTagToggle(tag)}
+                                        >
+                                            {tag}
+                                        </Chip>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <Button
+                            size="sm"
+                            variant="light"
+                            onPress={clearFilters}
+                            startContent={<BiX />}
+                        >
+                            Clear filters
+                        </Button>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
