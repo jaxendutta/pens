@@ -237,7 +237,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 <div className="w-full mb-6 relative group">
                                     <img
                                         src={coverImagePath}
-                                        alt={`Cover image for ${content.title}`}
+                                        alt={`Cover for ${content.title}`}
                                         className="w-full h-auto rounded-lg object-cover"
                                         onLoad={() => console.log(`Image loaded successfully: ${coverImagePath}`)}
                                         onError={handleImageError}
