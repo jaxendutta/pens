@@ -9,10 +9,10 @@ interface Params {
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Params }
+    { params }: { params: Promise<Params> }
 ) {
     try {
-        const { type, slug } = params;
+        const { type, slug } = await params;
 
         // Validate content type
         if (type !== 'pieces' && type !== 'poems') {

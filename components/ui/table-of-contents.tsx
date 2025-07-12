@@ -496,9 +496,8 @@ export function TableOfContents({
                         <CardBody className="p-4 flex-1 flex flex-col">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center  gap-2">
                                     <TbList size={20} className="text-primary" />
-                                    <h3 className="font-semibold text-sm">Table of Contents</h3>
                                 </div>
 
                                 <div className="flex items-center gap-1">

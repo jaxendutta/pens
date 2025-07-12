@@ -3,7 +3,7 @@ import { getContent, getContentList } from '@/lib/content-server';
 import { ContentReader } from '@/components/ui/content-reader';
 
 interface PageProps {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -14,7 +14,8 @@ export async function generateStaticParams() {
 }
 
 export default async function StoryPage({ params }: PageProps) {
-    const content = await getContent('pieces', params.slug);
+    const { slug } = await params;
+    const content = await getContent('pieces', slug);
 
     if (!content) {
         notFound();

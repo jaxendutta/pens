@@ -74,6 +74,20 @@ function countChapters(content: string): number {
     return chapterMatches ? chapterMatches.length : 0;
 }
 
+// Function to escape HTML entities for JSX compatibility
+function escapeHtmlEntities(html: string): string {
+    return html
+        // Escape apostrophes (but not in HTML attributes)
+        .replace(/(?<![\w="'])'(?![\w="'])/g, '&apos;')
+        // Escape standalone ampersands (but not HTML entities)
+        .replace(/&(?![a-zA-Z0-9#]+;)/g, '&amp;')
+        // Handle common smart quotes if present
+        .replace(/'/g, '&rsquo;')
+        .replace(/'/g, '&lsquo;')
+        .replace(/"/g, '&rdquo;')
+        .replace(/"/g, '&ldquo;');
+}
+
 async function processMarkdownContent(content: string): Promise<string> {
     // Track header numbering
     const headerCount = { h1: 0, h2: 0, h3: 0 };
@@ -99,15 +113,19 @@ async function processMarkdownContent(content: string): Promise<string> {
         return match;
     });
 
-    // Process with remark
+    // Process with remark - this converts markdown to HTML
     const processedMarkdown = await remark()
         .use(html)
         .process(numberedContent);
 
     let htmlContent = processedMarkdown.toString();
 
-    // Replace HTML headings with better styled versions including more spacing and IDs
+    // FIRST: Escape HTML entities for JSX compatibility
+    htmlContent = escapeHtmlEntities(htmlContent);
+
+    // THEN: Apply styling and transformations
     htmlContent = htmlContent
+        // Replace HTML headings with better styled versions including more spacing and IDs
         .replace(/<h1([^>]*)>(.*?)<\/h1>/g, (match, attrs, content) => {
             const id = generateHeadingId(content);
             return `<h1 id="${id}" class="text-3xl lg:text-4xl font-bold text-foreground mb-6 mt-12 pb-3 border-b-2 border-divider scroll-mt-24 first:mt-0"${attrs}>${content}</h1>`;
