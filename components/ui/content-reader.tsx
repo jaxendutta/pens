@@ -8,6 +8,7 @@ import {
     CardFooter,
     Button,
     Chip,
+    Image,
     Divider,
     Spacer,
 } from "@heroui/react";
@@ -53,6 +54,14 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     const isPieces = type === 'pieces';
     const isProtected = Boolean(content.password);
+
+    const metadata: { icon: JSX.Element; text: string }[] = [
+        { icon: <TbCalendar size={14} />, text: formatDate(content.date) },
+        { icon: <TbClock size={14} />, text: `${content.readingTime} min` },
+        { icon: <TbFileText size={14} />, text: `${content.wordCount.toLocaleString()} words` },
+        ...(content.chapters ? [{ icon: <TbBook size={14} />, text: `${content.chapters} chapters` }] : []),
+        ...(content.location ? [{ icon: <TbMapPin size={14} />, text: content.location }] : []),
+    ];
 
     useEffect(() => {
         // Check if user has already authenticated for this content
@@ -133,7 +142,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                         startContent={<TbArrowLeft size={16} />}
                         className="hover:bg-default-100"
                     >
-                        Back to {isPieces ? 'Stories' : 'Poems'}
+                        Back
                     </Button>
                 </motion.div>
 
@@ -174,47 +183,34 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 ))}
                             </div>
 
+                            {/* Image */}
+                            <div className="w-full mb-6">
+                                <Image
+                                    src={`/public/${type}/${content.slug}`}
+                                    alt={`Cover image for ${content.title}`}
+                                    className="w-full h-auto rounded-lg object-cover"
+                                />
+                            </div>
+
                             {/* Title */}
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                                 {content.title}
                             </h1>
 
                             {/* Metadata */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full text-sm">
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbCalendar size={16} />
-                                    <span>{formatDate(content.date)}</span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbClock size={16} />
-                                    <span>{content.readingTime} min read</span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-default-600">
-                                    <TbFileText size={16} />
-                                    <span>{content.wordCount.toLocaleString()} words</span>
-                                </div>
-
-                                {content.location && (
-                                    <div className="flex items-center gap-2 text-default-600">
-                                        <TbMapPin size={16} />
-                                        <span>{content.location}</span>
-                                    </div>
-                                )}
+                            <div className="flex flex-wrap gap-2">
+                                {metadata.map(item => (
+                                    <Chip
+                                        key={item.text}
+                                        color="primary"
+                                        variant="flat"
+                                        startContent={item.icon}
+                                    >
+                                        {item.text}
+                                    </Chip>
+                                ))}
                             </div>
-
-                            <p className="text-default-600 text-sm mt-4">by {content.author}</p>
                         </CardHeader>
-
-                        {content.excerpt && (
-                            <CardBody className="pt-0 px-8">
-                                <Divider className="mb-6" />
-                                <p className="text-lg text-default-700 leading-relaxed italic">
-                                    {content.excerpt}
-                                </p>
-                            </CardBody>
-                        )}
                     </Card>
                 </motion.div>
 

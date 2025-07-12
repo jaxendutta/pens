@@ -70,7 +70,7 @@ export function ContentCard({ content, type }: ContentCardProps) {
                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
                 className="h-full"
             >
-                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 border-1 hover:border-primary/20">
+                <Card className="h-full group cursor-pointer hover:shadow-xl transition-all duration-300 hover:border-primary/20">
                     <CardBody className="p-6">
                         {/* Status badges */}
                         <div className="flex gap-2 mb-3 flex-wrap">

@@ -6,6 +6,7 @@ import {
     Tooltip,
     Card,
     CardBody,
+    Divider,
     Popover,
     PopoverTrigger,
     PopoverContent,
@@ -151,7 +152,7 @@ export function FloatingActionBar({
                                             variant="flat"
                                             size="sm"
                                             onPress={() => setIsExpanded(!isExpanded)}
-                                            className="mb-2"
+                                            className=""
                                         >
                                             {isExpanded ? <TbX size={18} /> : <TbMenu2 size={18} />}
                                         </Button>
@@ -166,6 +167,8 @@ export function FloatingActionBar({
                                                 transition={{ duration: 0.2 }}
                                                 className="flex flex-col gap-1"
                                             >
+                                                <Divider className="my-1.5"/>
+
                                                 {/* Font size controls */}
                                                 <div className="flex flex-col gap-1 mb-2 pb-2 border-b border-divider">
                                                     <Tooltip content="Increase font size" placement="left">
@@ -228,7 +231,7 @@ export function FloatingActionBar({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 100 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:hidden"
+                        className="fixed bottom-6 right-6 z-40 lg:hidden"
                     >
                         <Card className="bg-background/90 backdrop-blur-md border border-divider shadow-lg">
                             <CardBody className="p-2">

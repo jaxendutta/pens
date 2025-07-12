@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Card, CardBody } from "@heroui/react";
 import { TbBook, TbSparkles } from "react-icons/tb";
@@ -49,6 +49,11 @@ const EmptyState = ({ type }: { type: ContentType }) => (
 
 export function ContentGrid({ items, type, title, description }: ContentGridProps) {
     const [filteredItems, setFilteredItems] = useState<ContentMeta[]>(items);
+
+    // Update filteredItems when items prop changes
+    useEffect(() => {
+        setFilteredItems(items);
+    }, [items]);
 
     const handleFilter = (filtered: ContentMeta[]) => {
         setFilteredItems(filtered);

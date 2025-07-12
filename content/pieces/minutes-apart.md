@@ -9,7 +9,7 @@ excerpt: "A tale of two fawns."
 password: "minutes"
 ---
 
-## Born Minutes Apart
+# Born Minutes Apart
 Sometimes I imagine the mist on a perfect day. Not too hot, neither too cold. Two fawns, born just an hour or two ago, a handful of minutes between them. They’re cousins, for their mothers were born of the same womb four summers ago. But they play, through the mist, through the memories, as if the world has been waiting all this time just to witness their first steps together.
 
 In the deep forests of the northern mountains, where ancient pines hold conversations in languages older than human memory, the bond between cousins began before their first breath. White-tailed deer, scientists tell us, can recognize family relationships across generations through scent alone — pheromones that carry the story of bloodlines in molecules too small for human understanding. These fawns knew each other before knowing themselves, their mothers grazing side by side through their gestation, their unborn hearts beating in rhythm across the thin walls of wombs that had shared the same grandmother’s warmth.
@@ -20,7 +20,7 @@ Their mothers, sisters who had never spent a season apart, licked their babies c
 
 The smaller fawn, still damp from birth, turned its wobbling head toward its cousin and made a sound that deer researchers have never catalogued — not quite a bleat, not quite a whisper, but something that seemed to say, “I know you. I have been waiting for you.”
 
-## The Language of Growing Together
+# The Language of Growing Together
 In the secret world that fawns inhabit during their first months of life, when their spots provide perfect camouflage and their mothers’ milk gives them everything they need, the cousins developed a communication that transcended the typical social structures of deer herds. While most fawns spend their early weeks hidden alone, emerging only for feeding, these two seemed to exist in a constant state of gentle play and mutual comfort.
 Wildlife biologists know that white-tailed deer fawns typically remain motionless and hidden for the first three to four weeks of life, their survival dependent on stillness and near-invisibility. But these cousins had discovered something that made the dangers of movement worthwhile — the joy of existing in perfect understanding with another being.
 
@@ -32,7 +32,7 @@ As the cousins grew stronger and their legs became steady enough for longer adve
 
 “Just once, let me belong somewhere, to someone,” the smaller cousin seemed to whisper now and then, to the winds that moved through their spots like a blessing in disguise. But this was not the desperate longing of the un-belonged — this was the prayer of a creature who had found their home and wanted to make it permanent, eternal, proof against the changes that time brings to all living things.
 
-## The Period of Perfect Understanding
+# The Period of Perfect Understanding
 Summer arrived with its abundance of food and its long, safe nights when the herd could graze openly in meadows painted silver by moonlight. The cousins, now old enough to move with the adult deer, discovered the joy of being part of something larger while maintaining their special bond within the safety of the herd.
 
 Deer herds, researchers have discovered, are complex social structures built on relationships that can span multiple generations. Does often remain close to their mothers and sisters throughout their lives, creating matrilineal groups that share territory, knowledge, and protection. Within these established patterns, the cousins found their place — not as separate individuals learning to navigate social hierarchies, but as a unit that moved through the world with such seamless coordination that other deer began to step aside for them, recognizing something in their partnership that deserved respect.
@@ -45,7 +45,7 @@ They would take turns — one grazing while the other watched, one sleeping whil
 
 “Where you once whispered my name in the language only we understood,” the smaller cousin might have said during those crisp autumn nights when they pressed together for warmth, “you have become the entire symphony by which I measure all other sounds. You are not just all that I have — you are the lens through which all existence gains meaning.”
 
-## The Morning That Changed Everything
+# The Morning That Changed Everything
 Winter in the mountains comes early and stays late, and with it comes the hunting season that turns the forest into a battlefield where deer become targets and every sound might signal death. The herd had moved to higher ground, to the thick woods where human hunters were less likely to venture, where the ancient trees provided cover and the steep terrain favored creatures who had evolved to navigate such challenges.
 
 The cousins, now almost a year old and nearly indistinguishable from adult deer except for their size, had learned to move with the careful silence that winter demands. They knew the warning calls that meant danger, the specific sounds that indicated whether threat came from the ground or the sky, from predator or human. They had never known a world without each other, and they faced their first real winter with the confidence that comes from perfect partnership.
@@ -62,7 +62,7 @@ The hunter’s approach was careful and methodical, the way hunters have been ta
 
 This is how some love their prey, from carefully measured distances, with trembling hands and patient calculation, maintaining devotion only long enough to pull the trigger and claim what they desire.
 
-## 5 The Incessant Search
+# The Incessant Search
 In the aftermath of sudden loss, when the herd had scattered and regrouped and moved to safer territory, the surviving cousin faced a choice that no creature should have to make: accept the incomprehensible absence and learn to exist as a single being, or maintain the bond that death had tried to sever and live in the space between acceptance and hope.
 
 Deer, ethologists tell us, do not typically mourn their dead in ways humans would recognize. They are creatures built for survival, programmed to move forward, to let natural selection favor the adaptable over the sentimental. But occasionally, bonds form that transcend typical behavioral patterns, relationships so deep they alter the basic programming of survival itself.
@@ -79,7 +79,7 @@ But as the searches yielded nothing, as winter deepened and the evidence became 
 
 “I understood the rules of this world, but understanding never gave me anything substantial to hold.”
 
-## 6 The Weight of A While
+# The Weight of A While
 Spring returned to the forest with its generational pact, and with it came the realization that the world would continue to cycle through seasons of birth and growth and death without regard for individual grief. The herd welcomed new fawns, life asserting itself with the same determination that had once brought two cousins into existence minutes apart.
 
 But for the survivor, spring was not renewal but reminder — every spotted fawn a reflection of what had been lost, every family group a demonstration of the wholeness that remained forever out of reach. 
@@ -101,7 +101,7 @@ As the years passed, the surviving cousin grew into a solitary adult deer, unusu
 “Perhaps I was merely a brief chapter in the story you were meant to tell, but you became the entire narrative by which I measure all meaning,” they acknowledged to the wind that carried no answer back. “So if there must be a heart that bears this burden completely, let it be mine alone.”
 
 
-## 7 The Promise That Transcends Death
+# The Promise That Transcends Death
 In the folklore of forest creatures, there are stories of love so pure it refuses to acknowledge the boundaries between life and death, bonds so strong they carry forward into whatever comes after the last breath leaves the body. The surviving cousin began to speak these promises aloud, sending them into the air like prayers to whatever forces might be listening.
 
 “When the earth finally reclaims my flesh and the small creatures inherit what remains of my form, they will receive visions of you through the decay they consume. They will hear me call your name incessantly, through moonlit nights that stretch into eternity. And if I am granted the gift of return, I will search for you in every incarnation, across every lifetime, until we are finally permitted to stay.”
