@@ -45,18 +45,25 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    slug: contentSlug,
+                    contentSlug: contentSlug,
                     password: password.trim(),
                     type
                 }),
             });
 
             if (response.ok) {
-                sessionStorage.setItem(`access_${type}_${contentSlug}`, 'granted');
-                onClose();
-                window.location.reload();
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionStorage.setItem(`access_${type}_${contentSlug}`, 'granted');
+                    onClose();
+                    // Navigate to the content page instead of reloading
+                    window.location.href = `/${type}/${contentSlug}`;
+                } else {
+                    setError(data.message || 'Incorrect password. Please try again.');
+                }
             } else {
-                setError('Incorrect password. Please try again.');
+                setError('Server error. Please try again.');
             }
         } catch (error) {
             console.error('Password verification error:', error);
@@ -119,20 +126,6 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                                     isDisabled={isVerifying}
                                     errorMessage={error}
                                     isInvalid={!!error}
-                                    endContent={
-                                        <button
-                                            className="focus:outline-none"
-                                            type="button"
-                                            onClick={() => setIsVisible(!isVisible)}
-                                            disabled={isVerifying}
-                                        >
-                                            {isVisible ? (
-                                                <TbEyeOff className="text-2xl text-default-400 pointer-events-none" />
-                                            ) : (
-                                                <TbEye className="text-2xl text-default-400 pointer-events-none" />
-                                            )}
-                                        </button>
-                                    }
                                 />
                             </form>
                         </ModalBody>

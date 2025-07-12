@@ -3,13 +3,10 @@
 import { useState, useEffect } from 'react';
 import {
     Card,
-    CardHeader,
     CardBody,
-    CardFooter,
     Button,
     Chip,
     Image,
-    Divider,
     Spacer,
 } from "@heroui/react";
 import { Link } from "@heroui/link";
@@ -152,76 +149,85 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                 {/* Content Header */}
                 <motion.div variants={fadeInVariants} initial="hidden" animate="visible">
-                    <Card className="mb-8">
-                        <CardHeader className="pb-4 pt-8 px-8 flex-col items-start">
-                            {/* Status badges */}
-                            <div className="flex gap-2 mb-6 flex-wrap">
+                    <Card className="mb-8 py-8 px-8 flex-col items-start">
+                        {/* Status badges */}
+                        <div className="flex gap-2 mb-6 flex-wrap">
+                            <Chip
+                                color={isPieces ? 'primary' : 'secondary'}
+                                variant="flat"
+                                startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
+                                className="pl-3 pr-1"
+                            >
+                                {isPieces ? 'Story' : 'Poem'}
+                            </Chip>
+
+                            {isProtected && (
                                 <Chip
-                                    color={isPieces ? 'primary' : 'secondary'}
+                                    color="success"
                                     variant="flat"
-                                    startContent={isPieces ? <TbBook size={16} /> : <TbSparkles size={16} />}
+                                    startContent={<TbLockOpen size={16} />}
                                     className="pl-3 pr-1"
                                 >
-                                    {isPieces ? 'Story' : 'Poem'}
+                                    Authenticated
                                 </Chip>
-
-                                {isProtected && (
-                                    <Chip
-                                        color="success"
-                                        variant="flat"
-                                        startContent={<TbLockOpen size={16} />}
-                                        className="pl-3 pr-1"
-                                    >
-                                        Authenticated
-                                    </Chip>
-                                )}
-
-                                {content.tags && content.tags.map(tag => (
-                                    <Chip
-                                        key={tag}
-                                        color="default"
-                                        variant="bordered"
-                                        size="sm"
-                                        startContent={<TbTag size={14} />}
-                                        className="pl-3 pr-1"
-                                    >
-                                        {tag}
-                                    </Chip>
-                                ))}
-                            </div>
-
-                            {/* Cover Image - only show if no error and file might exist */}
-                            {!imageError && (
-                                <div className="w-full mb-6">
-                                    <Image
-                                        src={coverImagePath}
-                                        alt={`Cover image for ${content.title}`}
-                                        className="w-full h-auto rounded-lg object-cover"
-                                        onError={() => setImageError(true)}
-                                        fallbackSrc="/images/default-cover.jpg"
-                                    />
-                                </div>
                             )}
 
-                            {/* Title */}
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                                {content.title}
-                            </h1>
+                            {content.tags && content.tags.map(tag => (
+                                <Chip
+                                    key={tag}
+                                    color="default"
+                                    variant="bordered"
+                                    size="sm"
+                                    startContent={<TbTag size={14} />}
+                                    className="pl-3 pr-1"
+                                >
+                                    {tag}
+                                </Chip>
+                            ))}
+                        </div>
 
-                            {/* Metadata */}
-                            <div className="flex flex-wrap gap-2">
-                                {metadata.map((item, index) => (
-                                    <Chip
-                                        key={index}
-                                        color="primary"
-                                        variant="flat"
-                                        startContent={item.icon}
+                        {/* Cover Image - only show if no error and file might exist */}
+                        {!imageError && (
+                            <div className="w-full mb-6 relative">
+                                <Image
+                                    src={coverImagePath}
+                                    alt={`Cover image for ${content.title}`}
+                                    className="w-full h-auto rounded-lg object-cover"
+                                    onError={() => setImageError(true)}
+                                    fallbackSrc="/images/default-cover.jpg"
+                                />
+                                {content.imageCredit && (
+                                    <Link
+                                        href={content.imageCreditUrl || '#'}
+                                        className="absolute bottom-2 right-2 text-xs bg-black/50 text-white px-2 py-1 rounded hover:bg-black/70 transition-colors"
+                                        isExternal={!!content.imageCreditUrl}
                                     >
-                                        {item.text}
-                                    </Chip>
-                                ))}
+                                        © {content.imageCredit}
+                                    </Link>
+
+                                )}
                             </div>
-                        </CardHeader>
+                        )}
+
+                        {/* Title */}
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                            {content.title}
+                        </h1>
+
+                        {/* Metadata */}
+                        <div className="flex flex-wrap gap-2">
+                            {metadata.map((item, index) => (
+                                <Chip
+                                    key={index}
+                                    color="primary"
+                                    variant="flat"
+                                    startContent={item.icon}
+                                    className="pl-3 pr-1"
+                                >
+                                    {item.text}
+                                </Chip>
+                            ))}
+                        </div>
                     </Card>
                 </motion.div>
 
@@ -250,18 +256,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 dangerouslySetInnerHTML={{ __html: content.content }}
                             />
                         </CardBody>
-
-                        <Divider />
-
-                        <CardFooter className="p-8">
-                            <div className="text-sm text-default-600 w-full">
-                                {content.lastRevision !== content.date ? (
-                                    <span>Last updated: {formatDate(content.lastRevision)}</span>
-                                ) : (
-                                    <span>Published: {formatDate(content.date)}</span>
-                                )}
-                            </div>
-                        </CardFooter>
                     </Card>
                 </motion.div>
 

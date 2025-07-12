@@ -7,6 +7,8 @@ date: "2025-07-02"
 lastRevision: "2025-07-12"
 excerpt: "Two cats in a garden."
 password: "bonded"
+imageCredit: "Ezis on Pinterest"
+imageCreditUrl: "https://uk.pinterest.com/pin/89086898872855538/"
 ---
 
 # The Forgotten Garden

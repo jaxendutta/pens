@@ -11,6 +11,8 @@ export interface ContentMeta {
     tags?: string[];
     chapters?: number;
     password?: string | null;
+    imageCredit?: string;
+    imageCreditUrl?: string;
 }
 
 export interface ContentItem extends ContentMeta {
