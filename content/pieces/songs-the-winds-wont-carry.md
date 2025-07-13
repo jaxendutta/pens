@@ -1,14 +1,14 @@
 ---
-slug: "songs-the-wind-wont-carry"
-title: "Songs the Wind Won't Carry, but the Branches Can't Forget"
+slug: "songs-the-winds-wont-carry"
+title: "Songs the Winds Won't Carry, but the Branches Can't Forget"
 author: "Jaxen Dutta"
 location: "Kitchener-Waterloo, Ontario, Canada"
 date: "2025-06-20"
 lastRevision: "2025-06-25"
-excerpt: "Wasted sap."
+excerpt: "Wasted sap and hollowed trunks."
 password: "songs"
-imageCredit:
-imageCreditUrl:
+imageCredit: "Anas Abdin"
+imageCreditUrl: "https://anasabdin.tumblr.com/image/189245965012"
 ---
 
 # The Vine That Strangled
