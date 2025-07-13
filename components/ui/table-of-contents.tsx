@@ -370,11 +370,11 @@ export function TableOfContents({
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
-                        initial={{ opacity: 0, y: -100 }}
+                        initial={{ opacity: 0, y: 100 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -100 }}
+                        exit={{ opacity: 0, y: 100 }}
                         transition={{ duration: 0.3 }}
-                        className="table-of-contents fixed top-16 left-0 right-0 z-40 px-4"
+                        className="table-of-contents fixed bottom-4 left-4 right-4 z-40"
                     >
                         <Card className="bg-background/95 backdrop-blur-md border border-divider shadow-lg">
                             <CardBody className="p-3">
@@ -382,12 +382,7 @@ export function TableOfContents({
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <TbList size={18} className="text-primary" />
-                                        <span className="text-sm font-medium">Table of Contents</span>
-                                        {!isExpanded && (
-                                            <span className="text-xs text-default-600">
-                                                ({tocItems.length} sections)
-                                            </span>
-                                        )}
+                                        <span className="text-sm font-medium">{tocItems.length} chapters</span>
                                     </div>
 
                                     <div className="flex items-center gap-1">
@@ -419,7 +414,7 @@ export function TableOfContents({
                                             onPress={toggleExpanded}
                                             aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
                                         >
-                                            {isExpanded ? <TbChevronUp size={16} /> : <TbChevronDown size={16} />}
+                                            {isExpanded ? <TbChevronDown size={16} /> : <TbChevronUp size={16} />}
                                         </Button>
                                     </div>
                                 </div>
@@ -463,6 +458,11 @@ export function TableOfContents({
                                                                     ${item.level > 3 ? 'ml-9 text-xs text-default-600' : ''}
                                                                 `}
                                                             >
+                                                                <span className="text-default-500 inline-block min-w-[24px] mr-1">
+                                                                    {item.level === 1 ? `${tocItems.indexOf(item) + 1}` :
+                                                                        item.level === 2 ? `.${tocItems.filter(t => t.level === 1).indexOf(tocItems.find(t => t.level === 1 && t.id <= item.id) || tocItems[0]) + 1}.${tocItems.filter(t => t.level === 2 && t.id <= item.id).length}` :
+                                                                            item.level === 3 ? `.${tocItems.filter(t => t.level === 1).indexOf(tocItems.find(t => t.level === 1 && t.id <= item.id) || tocItems[0]) + 1}.${tocItems.filter(t => t.level === 2).indexOf(tocItems.find(t => t.level === 2 && t.id <= item.id) || tocItems[0]) + 1}${tocItems.filter(t => t.level === 3 && t.id <= item.id).length}` : ''}
+                                                                </span>
                                                                 {item.title}
                                                             </button>
                                                         </li>

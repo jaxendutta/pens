@@ -99,7 +99,6 @@
     border: 1px solid hsl(var(--nextui-divider));
     border-radius: 12px;
     padding: 1.5rem;
-    margin: 2rem 0;
 }
 
 .table-of-contents h3 {
@@ -269,7 +268,7 @@
         background: #f0f0f0 !important;
         color: black !important;
     }
-    
+
     /* Print header/footer info */
     @page {
         margin: 1in;

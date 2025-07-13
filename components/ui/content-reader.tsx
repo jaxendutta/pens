@@ -27,7 +27,7 @@ import {
     TbAccessible,
     TbExternalLink,
 } from "react-icons/tb";
-import { ContentItem } from '@/lib/types';
+import { ContentItem, ContentType } from '@/lib/types';
 import { formatDate } from '@/lib/content';
 import { PasswordModal } from './password-modal';
 import { TableOfContents } from './table-of-contents';
@@ -35,7 +35,7 @@ import { AccessibilityPanel } from './accessibility-panel';
 
 interface ContentReaderProps {
     content: ContentItem;
-    type: 'pieces' | 'poems';
+    type: ContentType;
 }
 
 const fadeInVariants = {
@@ -161,7 +161,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
             {/* Main content with proper spacing for sidebar */}
             <div className="lg:ml-96 transition-all duration-300">
-                <div className="container mx-auto lg:px-6 md:px-4 px-2 py-12 max-w-4xl">
+                <div className="container mx-auto lg:px-6 md:px-4 px-0 py-12 max-w-4xl">
                     {/* Back Navigation */}
                     <motion.div
                         className="mb-8"
@@ -195,7 +195,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                     {/* Content Header */}
                     <motion.div variants={fadeInVariants} initial="hidden" animate="visible">
-                        <Card className="mb-8 py-8 px-8 flex-col items-start">
+                        <Card className="mb-8 lg:p-8 md:p-6.5 p-5 flex-col items-start">
                             {/* Status badges */}
                             <div className="flex gap-2 mb-6 flex-wrap">
                                 <Chip
@@ -291,7 +291,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                         transition={{ delay: 0.2 }}
                     >
                         <Card>
-                            <CardBody className="p-8 sm:p-12">
+                            <CardBody className="lg:p-8 md:p-7 p-6">
                                 <div
                                     className="content-area max-w-none"
                                     dangerouslySetInnerHTML={{ __html: content.content }}
