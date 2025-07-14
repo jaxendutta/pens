@@ -1,3 +1,4 @@
+// components/ui/accessibility-panel.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -102,6 +103,26 @@ export function AccessibilityPanel({ isOpen, onOpenChange }: AccessibilityPanelP
                 dyslexic: '"OpenDyslexic", "Comic Sans MS", sans-serif',
             };
             element.style.fontFamily = fontFamilyMap[newSettings.fontFamily as keyof typeof fontFamilyMap];
+
+            // Apply heading scaling
+            const headings = element.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(heading => {
+                const headingEl = heading as HTMLElement;
+                const level = parseInt(heading.tagName.charAt(1));
+
+                // Scale headings proportionally to base font size
+                const scaleFactor = newSettings.fontSize / 16; // 16px is base
+                const baseSizes = {
+                    1: 32, // 2rem at 16px base
+                    2: 24, // 1.5rem
+                    3: 20, // 1.25rem
+                    4: 18, // 1.125rem
+                    5: 16, // 1rem
+                    6: 14  // 0.875rem
+                };
+
+                headingEl.style.fontSize = `${baseSizes[level as keyof typeof baseSizes] * scaleFactor}px`;
+            });
         });
 
         // Apply motion settings
@@ -159,6 +180,7 @@ export function AccessibilityPanel({ isOpen, onOpenChange }: AccessibilityPanelP
             size="2xl"
             scrollBehavior="inside"
             placement="center"
+            isDismissable={true}
         >
             <ModalContent>
                 {(onClose) => (

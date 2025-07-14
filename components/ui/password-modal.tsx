@@ -1,3 +1,4 @@
+// components/ui/password-modal.tsx
 'use client';
 
 import { useState } from 'react';
@@ -126,6 +127,21 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                                     isDisabled={isVerifying}
                                     errorMessage={error}
                                     isInvalid={!!error}
+                                    endContent={
+                                        <button
+                                            className="focus:outline-none"
+                                            type="button"
+                                            onClick={() => setIsVisible(!isVisible)}
+                                            aria-label="toggle password visibility"
+                                        >
+                                            {isVisible ? (
+                                                <TbEyeOff className="text-2xl text-default-400 pointer-events-none" />
+                                            ) : (
+                                                <TbEye className="text-2xl text-default-400 pointer-events-none" />
+                                            )}
+                                        </button>
+                                    }
+                                    autoFocus
                                 />
                             </form>
                         </ModalBody>

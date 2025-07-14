@@ -1,8 +1,7 @@
+// lib/content-server.ts
 import { promises as fs } from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
 import { ContentItem, ContentType } from './types';
 
 export async function getContent(
@@ -16,9 +15,6 @@ export async function getContent(
         const fileContents = await fs.readFile(fullPath, 'utf8');
         const { data, content } = matter(fileContents);
 
-        // Process markdown content
-        const processedContent = await processMarkdownContent(content);
-
         // Calculate reading time (average 200 words per minute)
         const wordCount = content.split(/\s+/).length;
         const readingTime = Math.ceil(wordCount / 200);
@@ -30,7 +26,7 @@ export async function getContent(
             slug,
             title: data.title || 'Untitled',
             author: data.author || 'Unknown',
-            content: processedContent,
+            content: content, // Return raw markdown instead of processed HTML
             excerpt: data.excerpt || generateExcerpt(content),
             date: data.date || new Date().toISOString(),
             lastRevision: data.lastRevision || data.date || new Date().toISOString(),
@@ -74,116 +70,6 @@ function countChapters(content: string): number {
     // Count level 1 headings (# heading) as chapters
     const chapterMatches = content.match(/^#\s+.+$/gm);
     return chapterMatches ? chapterMatches.length : 0;
-}
-
-// Function to escape HTML entities for JSX compatibility
-function escapeHtmlEntities(html: string): string {
-    return html
-        // Escape apostrophes (but not in HTML attributes)
-        .replace(/(?<![\w="'])'(?![\w="'])/g, '&apos;')
-        // Escape standalone ampersands (but not HTML entities)
-        .replace(/&(?![a-zA-Z0-9#]+;)/g, '&amp;')
-        // Handle common smart quotes if present
-        .replace(/'/g, '&rsquo;')
-        .replace(/'/g, '&lsquo;')
-        .replace(/"/g, '&rdquo;')
-        .replace(/"/g, '&ldquo;');
-}
-
-async function processMarkdownContent(content: string): Promise<string> {
-    // Track header numbering
-    const headerCount = { h1: 0, h2: 0, h3: 0 };
-
-    // Add numbering to headers (only for h1, h2, h3)
-    const numberedContent = content.replace(/^(#{1,3})\s+(.+)$/gm, (match, hashes, title) => {
-        const level = hashes.length;
-
-        if (level === 1) {
-            headerCount.h1++;
-            headerCount.h2 = 0;
-            headerCount.h3 = 0;
-            return `${hashes} ${headerCount.h1}. ${title}`;
-        } else if (level === 2) {
-            headerCount.h2++;
-            headerCount.h3 = 0;
-            return `${hashes} ${headerCount.h1}.${headerCount.h2}. ${title}`;
-        } else if (level === 3) {
-            headerCount.h3++;
-            return `${hashes} ${headerCount.h1}.${headerCount.h2}.${headerCount.h3}. ${title}`;
-        }
-
-        return match;
-    });
-
-    // Process with remark - this converts markdown to HTML
-    const processedMarkdown = await remark()
-        .use(html)
-        .process(numberedContent);
-
-    let htmlContent = processedMarkdown.toString();
-
-    // FIRST: Escape HTML entities for JSX compatibility
-    htmlContent = escapeHtmlEntities(htmlContent);
-
-    // THEN: Apply styling and transformations
-    htmlContent = htmlContent
-        // Replace HTML headings with better styled versions including more spacing and IDs
-        .replace(/<h1([^>]*)>(.*?)<\/h1>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h1 id="${id}" class="text-3xl lg:text-4xl font-bold text-foreground mb-6 mt-12 pb-3 border-b-2 border-divider scroll-mt-24 first:mt-0"${attrs}>${content}</h1>`;
-        })
-        .replace(/<h2([^>]*)>(.*?)<\/h2>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h2 id="${id}" class="text-2xl lg:text-3xl font-bold text-foreground mb-4 mt-10 pb-2 border-b border-divider scroll-mt-24"${attrs}>${content}</h2>`;
-        })
-        .replace(/<h3([^>]*)>(.*?)<\/h3>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h3 id="${id}" class="text-xl lg:text-2xl font-semibold text-foreground mb-3 mt-8 scroll-mt-24"${attrs}>${content}</h3>`;
-        })
-        .replace(/<h4([^>]*)>(.*?)<\/h4>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h4 id="${id}" class="text-lg lg:text-xl font-semibold text-foreground mb-3 mt-6 scroll-mt-24"${attrs}>${content}</h4>`;
-        })
-        .replace(/<h5([^>]*)>(.*?)<\/h5>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h5 id="${id}" class="text-base lg:text-lg font-semibold text-foreground mb-2 mt-5 scroll-mt-24"${attrs}>${content}</h5>`;
-        })
-        .replace(/<h6([^>]*)>(.*?)<\/h6>/g, (match, attrs, content) => {
-            const id = generateHeadingId(content);
-            return `<h6 id="${id}" class="text-sm lg:text-base font-semibold text-foreground mb-2 mt-4 scroll-mt-24"${attrs}>${content}</h6>`;
-        })
-
-        // Improved paragraph styling with better spacing
-        .replace(/<p>/g, '<p class="mb-6 leading-relaxed text-foreground text-justify">')
-
-        // Enhanced blockquote styling
-        .replace(/<blockquote>/g, '<blockquote class="border-l-4 border-primary pl-6 py-4 my-8 italic bg-default-50 rounded-r-lg shadow-sm">')
-
-        // Better list styling
-        .replace(/<ul>/g, '<ul class="list-disc list-inside mb-6 space-y-3 ml-4">')
-        .replace(/<ol>/g, '<ol class="list-decimal list-inside mb-6 space-y-3 ml-4">')
-        .replace(/<li>/g, '<li class="leading-relaxed text-foreground pl-2">')
-
-        // Enhanced code styling
-        .replace(/<code>/g, '<code class="bg-default-100 text-primary px-2 py-1 rounded text-sm font-mono border">')
-        .replace(/<pre>/g, '<pre class="bg-default-100 p-6 rounded-lg overflow-x-auto my-6 border shadow-sm">')
-
-        // Better link styling
-        .replace(/<a\s+([^>]*href="[^"]*")([^>]*)>/g, '<a class="text-primary hover:text-primary-600 underline underline-offset-2 transition-colors duration-200 font-medium" $1$2>')
-
-        // Enhanced table styling
-        .replace(/<table>/g, '<table class="w-full border-collapse my-8 bg-background rounded-lg overflow-hidden shadow-sm border border-divider">')
-        .replace(/<thead>/g, '<thead class="bg-default-100">')
-        .replace(/<th>/g, '<th class="border border-divider px-4 py-3 text-left font-semibold text-foreground">')
-        .replace(/<td>/g, '<td class="border border-divider px-4 py-3 text-foreground">')
-
-        // Enhanced horizontal rule
-        .replace(/<hr>/g, '<hr class="border-none border-t-2 border-divider my-12 w-1/2 mx-auto">')
-
-        // Add spacing for images
-        .replace(/<img/g, '<img class="my-8 mx-auto rounded-lg shadow-md border border-divider"');
-
-    return htmlContent;
 }
 
 export function generateTableOfContents(content: string): Array<{ id: string, title: string, level: number }> {

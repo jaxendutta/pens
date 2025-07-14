@@ -1,3 +1,4 @@
+// components/ui/content-reader.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,9 +7,9 @@ import {
     CardBody,
     Button,
     Chip,
-    Image,
     Spacer,
     useDisclosure,
+    Switch,
 } from "@heroui/react";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
@@ -26,12 +27,15 @@ import {
     TbLockOpen,
     TbAccessible,
     TbExternalLink,
+    TbCards,
+    TbList,
 } from "react-icons/tb";
 import { ContentItem, ContentType } from '@/lib/types';
 import { formatDate } from '@/lib/content';
 import { PasswordModal } from './password-modal';
 import { TableOfContents } from './table-of-contents';
 import { AccessibilityPanel } from './accessibility-panel';
+import { ContentRenderer } from './content-renderer';
 
 interface ContentReaderProps {
     content: ContentItem;
@@ -53,6 +57,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const [imageError, setImageError] = useState(false);
     const [coverImagePath, setCoverImagePath] = useState<string>('');
     const [imageExtensionIndex, setImageExtensionIndex] = useState(0);
+    const [useChapterCards, setUseChapterCards] = useState(false);
 
     const { isOpen: isAccessibilityOpen, onOpen: onAccessibilityOpen, onOpenChange: onAccessibilityOpenChange } = useDisclosure();
 
@@ -61,6 +66,19 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     // Try different image extensions
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    // Load chapter cards preference
+    useEffect(() => {
+        const saved = localStorage.getItem('use-chapter-cards');
+        if (saved) {
+            setUseChapterCards(JSON.parse(saved));
+        }
+    }, []);
+
+    const handleChapterCardsToggle = (enabled: boolean) => {
+        setUseChapterCards(enabled);
+        localStorage.setItem('use-chapter-cards', JSON.stringify(enabled));
+    };
 
     // Set initial image path
     useEffect(() => {
@@ -181,15 +199,37 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                             </Button>
 
                             {/* Mobile accessibility button */}
-                            <Button
-                                isIconOnly
-                                variant="flat"
-                                onPress={onAccessibilityOpen}
-                                className="lg:hidden"
-                                aria-label="Open accessibility settings"
-                            >
-                                <TbAccessible size={16} />
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                {/* Chapter Cards Toggle */}
+                                {content.chapters && content.chapters > 1 && (
+                                    <div className="hidden sm:flex items-center gap-2">
+                                        <TbList size={16} className="text-default-600" />
+                                        <Switch
+                                            size="sm"
+                                            isSelected={useChapterCards}
+                                            onValueChange={handleChapterCardsToggle}
+                                            thumbIcon={({ isSelected, className }) =>
+                                                isSelected ? (
+                                                    <TbCards className={className} />
+                                                ) : (
+                                                    <TbList className={className} />
+                                                )
+                                            }
+                                        />
+                                        <span className="text-sm text-default-600">Chapter Cards</span>
+                                    </div>
+                                )}
+
+                                <Button
+                                    isIconOnly
+                                    variant="flat"
+                                    onPress={onAccessibilityOpen}
+                                    className="lg:hidden"
+                                    aria-label="Open accessibility settings"
+                                >
+                                    <TbAccessible size={16} />
+                                </Button>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -267,7 +307,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                             </h1>
 
                             {/* Metadata */}
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 mb-4">
                                 {metadata.map((item, index) => (
                                     <Chip
                                         key={index}
@@ -280,6 +320,26 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                     </Chip>
                                 ))}
                             </div>
+
+                            {/* Mobile Chapter Cards Toggle */}
+                            {content.chapters && content.chapters > 1 && (
+                                <div className="sm:hidden flex items-center gap-2 mt-4">
+                                    <TbList size={16} className="text-default-600" />
+                                    <Switch
+                                        size="sm"
+                                        isSelected={useChapterCards}
+                                        onValueChange={handleChapterCardsToggle}
+                                        thumbIcon={({ isSelected, className }) =>
+                                            isSelected ? (
+                                                <TbCards className={className} />
+                                            ) : (
+                                                <TbList className={className} />
+                                            )
+                                        }
+                                    />
+                                    <span className="text-sm text-default-600">Chapter Cards</span>
+                                </div>
+                            )}
                         </Card>
                     </motion.div>
 
@@ -290,14 +350,23 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                         animate="visible"
                         transition={{ delay: 0.2 }}
                     >
-                        <Card>
-                            <CardBody className="lg:p-8 md:p-7 p-6">
-                                <div
-                                    className="content-area max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: content.content }}
-                                />
-                            </CardBody>
-                        </Card>
+                        {useChapterCards && content.chapters && content.chapters > 1 ? (
+                            // Render with chapter cards
+                            <ContentRenderer
+                                content={content.content}
+                                useChapterCards={true}
+                            />
+                        ) : (
+                            // Render as single card
+                            <Card>
+                                <CardBody className="lg:p-8 md:p-7 p-6">
+                                    <ContentRenderer
+                                        content={content.content}
+                                        useChapterCards={false}
+                                    />
+                                </CardBody>
+                            </Card>
+                        )}
                     </motion.div>
 
                     <Spacer y={8} />
