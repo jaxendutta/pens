@@ -140,7 +140,6 @@ export function PasswordModal({ isOpen, onClose, contentSlug, type }: PasswordMo
                                             )}
                                         </button>
                                     }
-                                    autoFocus
                                 />
                             </form>
                         </ModalBody>
