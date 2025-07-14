@@ -1,4 +1,3 @@
-// components/ui/accessibility-panel.tsx
 'use client';
 
 import { useState, useEffect } from 'react';

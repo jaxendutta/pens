@@ -1,4 +1,3 @@
-// components/ui/content-renderer.tsx
 'use client';
 
 import { useMemo } from 'react';

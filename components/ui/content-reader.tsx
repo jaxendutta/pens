@@ -1,4 +1,3 @@
-// components/ui/content-reader.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -169,6 +168,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                 content={content.content}
                 onAccessibilityClick={onAccessibilityOpen}
                 contentTitle={content.title}
+                useChapterCards={useChapterCards}
             />
 
             {/* Accessibility Panel */}
@@ -203,7 +203,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                 {/* Chapter Cards Toggle */}
                                 {content.chapters && content.chapters > 1 && (
                                     <div className="hidden sm:flex items-center gap-2">
-                                        <TbList size={16} className="text-default-600" />
+                                        <span className="text-sm text-default-600">List</span>
                                         <Switch
                                             size="sm"
                                             isSelected={useChapterCards}
@@ -216,7 +216,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                                                 )
                                             }
                                         />
-                                        <span className="text-sm text-default-600">Chapter Cards</span>
+                                        <span className="text-sm text-default-600">Cards</span>
                                     </div>
                                 )}
 

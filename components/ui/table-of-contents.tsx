@@ -1,4 +1,3 @@
-// components/ui/table-of-contents.tsx
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -32,6 +31,7 @@ interface TableOfContentsProps {
     className?: string;
     onAccessibilityClick?: () => void;
     contentTitle?: string;
+    useChapterCards?: boolean; // Add this to trigger re-initialization when rendering mode changes
 }
 
 // Shared ToC Navigation Component
@@ -183,7 +183,8 @@ export function TableOfContents({
     content,
     className = "",
     onAccessibilityClick,
-    contentTitle
+    contentTitle,
+    useChapterCards = false
 }: TableOfContentsProps) {
     const [tocItems, setTocItems] = useState<TocItem[]>([]);
     const [activeId, setActiveId] = useState<string>('');
@@ -267,60 +268,84 @@ export function TableOfContents({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Extract and setup headings with proper numbering
+    // Extract and setup headings with proper numbering - need to re-run when content rendering changes
     useEffect(() => {
         const headings = extractHeadings(content);
         setTocItems(headings);
+    }, [content]);
 
-        if (headings.length > 0) {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
+    // Separate effect for intersection observer that depends on both content and DOM structure
+    useEffect(() => {
+        if (tocItems.length === 0) return;
 
-            observerRef.current = new IntersectionObserver(
-                (entries) => {
-                    // Get all currently intersecting headings
-                    const intersectingEntries = entries.filter(entry => entry.isIntersecting);
+        // Clean up previous observer
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
 
-                    if (intersectingEntries.length > 0) {
-                        // Sort by their position on screen (top to bottom)
-                        intersectingEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        // Reset active ID when switching modes
+        setActiveId('');
 
-                        // Use the first (topmost) intersecting heading
-                        setActiveId(intersectingEntries[0].target.id);
-                    } else {
-                        // If no headings are intersecting, find the one just above the viewport
-                        const allEntries = entries.filter(entry => entry.boundingClientRect.top < 0);
-                        if (allEntries.length > 0) {
-                            // Sort by position and take the last one (closest to viewport)
-                            allEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-                            setActiveId(allEntries[allEntries.length - 1].target.id);
-                        }
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                // Get all currently intersecting headings
+                const intersectingEntries = entries.filter(entry => entry.isIntersecting);
+
+                if (intersectingEntries.length > 0) {
+                    // Sort by their position on screen (top to bottom)
+                    intersectingEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+                    // Use the first (topmost) intersecting heading
+                    setActiveId(intersectingEntries[0].target.id);
+                } else {
+                    // If no headings are intersecting, find the one just above the viewport
+                    const allEntries = entries.filter(entry => entry.boundingClientRect.top < 0);
+                    if (allEntries.length > 0) {
+                        // Sort by position and take the last one (closest to viewport)
+                        allEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+                        setActiveId(allEntries[allEntries.length - 1].target.id);
                     }
-                },
-                {
-                    rootMargin: '-20% 0px -70% 0px', // Trigger when heading is 20% from top
-                    threshold: [0, 0.25, 0.5, 0.75, 1]
                 }
-            );
+            },
+            {
+                rootMargin: '-20% 0px -70% 0px', // Trigger when heading is 20% from top
+                threshold: [0, 0.25, 0.5, 0.75, 1]
+            }
+        );
 
-            const timer = setTimeout(() => {
-                headings.forEach(({ id }) => {
+        // Use a longer timeout to ensure DOM has updated after mode switch
+        const timer = setTimeout(() => {
+            let foundElements = 0;
+            const maxRetries = 10;
+            let retryCount = 0;
+
+            const tryObserveElements = () => {
+                foundElements = 0;
+                tocItems.forEach(({ id }) => {
                     const element = document.getElementById(id);
                     if (element && observerRef.current) {
                         observerRef.current.observe(element);
+                        foundElements++;
                     }
                 });
-            }, 100);
 
-            return () => {
-                clearTimeout(timer);
-                if (observerRef.current) {
-                    observerRef.current.disconnect();
+                // If we didn't find all elements and haven't hit max retries, try again
+                if (foundElements < tocItems.length && retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(tryObserveElements, 100);
                 }
             };
-        }
-    }, [content]);
+
+            tryObserveElements();
+        }, 200); // Increased timeout for mode switches
+
+        return () => {
+            clearTimeout(timer);
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, [tocItems, useChapterCards]); // Re-run when tocItems change or when switching between modes
 
     const extractHeadings = useCallback((htmlContent: string): TocItem[] => {
         if (typeof window !== 'undefined') {

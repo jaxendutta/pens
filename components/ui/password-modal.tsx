@@ -1,4 +1,3 @@
-// components/ui/password-modal.tsx
 'use client';
 
 import { useState } from 'react';
