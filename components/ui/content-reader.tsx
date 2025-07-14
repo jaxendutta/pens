@@ -245,7 +245,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
                                     {/* Image credit overlay */}
                                     {content.imageCredit && (
-                                        <div className="absolute bottom-3 right-3 z-10">
+                                        <div className="absolute lg:bottom-3 md:bottom-2 bottom-1 lg:right-3 md:right-2 right-1 z-10">
                                             <Link
                                                 href={content.imageCreditUrl || '#'}
                                                 className="text-xs bg-black/75 text-white px-3 py-1.5 rounded-full hover:bg-black/90 transition-all duration-200 backdrop-blur-sm flex items-center gap-1.5 shadow-lg"
