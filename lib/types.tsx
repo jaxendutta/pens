@@ -11,6 +11,7 @@ export interface ContentMeta {
     tags?: string[];
     chapters?: number;
     password?: string | null;
+    imagePath?: string;
     imageCredit?: string;
     imageCreditUrl?: string;
 }

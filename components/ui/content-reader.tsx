@@ -63,9 +63,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const isPieces = type === 'pieces';
     const isProtected = Boolean(content.password);
 
-    // Try different image extensions
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
     // Load chapter cards preference
     useEffect(() => {
         const saved = localStorage.getItem('use-chapter-cards');
@@ -77,35 +74,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
     const handleChapterCardsToggle = (enabled: boolean) => {
         setUseChapterCards(enabled);
         localStorage.setItem('use-chapter-cards', JSON.stringify(enabled));
-    };
-
-    // Set initial image path
-    useEffect(() => {
-        const initialPath = `/${type}/${content.slug}.${imageExtensions[0]}`;
-        console.log(`Setting initial image path: ${initialPath}`);
-        setCoverImagePath(initialPath);
-        setImageExtensionIndex(0);
-        setImageError(false);
-    }, [content.slug, type]);
-
-    // Handle image load failure - try next extension
-    const handleImageError = () => {
-        const nextIndex = imageExtensionIndex + 1;
-
-        console.log(`Image failed to load: ${coverImagePath}`);
-        console.log(`Trying next extension (${nextIndex}/${imageExtensions.length})`);
-
-        if (nextIndex < imageExtensions.length) {
-            // Try next extension
-            const nextPath = `/${type}/${content.slug}.${imageExtensions[nextIndex]}`;
-            console.log(`Trying: ${nextPath}`);
-            setCoverImagePath(nextPath);
-            setImageExtensionIndex(nextIndex);
-        } else {
-            // No more extensions to try
-            console.log('No more image extensions to try');
-            setImageError(true);
-        }
     };
 
     // Track authentication state
@@ -273,14 +241,12 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                             </div>
 
                             {/* Cover Image */}
-                            {!imageError && coverImagePath && (
+                            {content.imagePath && (
                                 <div className="w-full mb-6 relative group">
                                     <img
-                                        src={coverImagePath}
+                                        src={content.imagePath}
                                         alt={`Cover for ${content.title}`}
                                         className="w-full h-auto rounded-lg object-cover"
-                                        onLoad={() => console.log(`Image loaded successfully: ${coverImagePath}`)}
-                                        onError={handleImageError}
                                     />
 
                                     {/* Image credit overlay */}

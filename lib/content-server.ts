@@ -4,6 +4,33 @@ import path from 'path';
 import matter from 'gray-matter';
 import { ContentItem, ContentType } from './types';
 
+// Add this helper function
+async function findImageFile(type: ContentType, slug: string): Promise<string | null> {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const publicDir = path.join(process.cwd(), 'public', type);
+
+    // Check if the public directory exists
+    try {
+        await fs.access(publicDir);
+    } catch {
+        // Directory doesn't exist, no images available
+        return null;
+    }
+
+    for (const ext of imageExtensions) {
+        const imagePath = path.join(publicDir, `${slug}.${ext}`);
+        try {
+            await fs.access(imagePath);
+            return `/${type}/${slug}.${ext}`;
+        } catch {
+            // File doesn't exist, try next extension
+            continue;
+        }
+    }
+
+    return null;
+}
+
 export async function getContent(
     type: ContentType,
     slug: string,
@@ -22,6 +49,9 @@ export async function getContent(
         // Calculate chapters automatically by counting # headings (level 1)
         const chapters = countChapters(content);
 
+        // Find existing image file
+        const imagePath = await findImageFile(type, slug);
+
         return {
             slug,
             title: data.title || 'Untitled',
@@ -36,6 +66,7 @@ export async function getContent(
             wordCount,
             chapters: data.chapters || chapters,
             location: data.location || null,
+            imagePath: imagePath || undefined,
             imageCredit: data.imageCredit || undefined,
             imageCreditUrl: data.imageCreditUrl || undefined,
         };
