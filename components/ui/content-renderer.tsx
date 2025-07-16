@@ -108,8 +108,7 @@ function parseMarkdownContent(content: string, useChapterCards: boolean): React.
                         id={id}
                         className={getHeadingClass(level)}
                     >
-                        {number && <span className="text-default-500 mr-2">{number}</span>}
-                        {cleanText}
+                        {number && <span className="text-default-500">{number}</span>} {cleanText}
                     </HeadingTag>
                 );
 
