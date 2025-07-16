@@ -128,7 +128,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     return (
         <div className="min-h-screen">
-            {/* Table of Contents - now includes all floating actions */}
+            {/* Table of Contents */}
             <TableOfContents
                 content={content.content}
                 onAccessibilityClick={onAccessibilityOpen}
