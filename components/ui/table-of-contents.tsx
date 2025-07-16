@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from 'next-themes';
 import {
     TbList,
-    TbChevronUp,
-    TbChevronDown,
+    TbListDetails,
+    TbX,
     TbAccessible,
     TbArrowUp,
     TbShare,
@@ -72,6 +72,7 @@ function useScrollProgress() {
 function useHeadings(content: string, useChapterCards: boolean) {
     const [tocItems, setTocItems] = useState<TocItem[]>([]);
     const [activeId, setActiveId] = useState<string>('');
+    const [isScrolling, setIsScrolling] = useState(false);
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     const generateId = (text: string): string => {
@@ -141,6 +142,9 @@ function useHeadings(content: string, useChapterCards: boolean) {
 
         observerRef.current = new IntersectionObserver(
             (entries) => {
+                // Don't update active heading while manually scrolling
+                if (isScrolling) return;
+
                 const intersectingEntries = entries.filter(entry => entry.isIntersecting);
 
                 if (intersectingEntries.length > 0) {
@@ -179,19 +183,25 @@ function useHeadings(content: string, useChapterCards: boolean) {
                 observerRef.current.disconnect();
             }
         };
-    }, [tocItems, useChapterCards]);
+    }, [tocItems, useChapterCards, isScrolling]);
 
     const scrollToHeading = (id: string) => {
         const element = document.getElementById(id);
         if (element) {
-            // Calculate proper offset to account for fixed headers and spacing
-            const yOffset = -100; // Adjust based on your header height
-            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            // Set scrolling flag to prevent intersection observer interference
+            setIsScrolling(true);
 
-            window.scrollTo({
-                top: y,
-                behavior: 'smooth'
+            // Use the built-in scroll-margin that's already set in CSS (scroll-mt-32 = 128px)
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
+
+            // Clear scrolling flag after scroll animation completes
+            setTimeout(() => {
+                setIsScrolling(false);
+                setActiveId(id); // Manually set the active heading
+            }, 1000);
         }
     };
 
@@ -353,7 +363,7 @@ export function TableOfContents({
 
         // For mobile, delay collapse to allow scroll to complete
         if (isMobile) {
-            setTimeout(() => setIsExpanded(false), 100);
+            setTimeout(() => setIsExpanded(false), 1200); // Slightly longer than scroll animation
         }
     };
 
@@ -407,9 +417,9 @@ export function TableOfContents({
                                         <Button
                                             isIconOnly size="sm" variant="flat"
                                             onPress={() => setIsExpanded(!isExpanded)}
-                                            aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
+                                            aria-label={isExpanded ? "Close chapters" : "Show chapters"}
                                         >
-                                            {isExpanded ? <TbChevronDown size={16} /> : <TbChevronUp size={16} />}
+                                            {isExpanded ? <TbX size={16} /> : <TbListDetails size={16} />}
                                         </Button>
                                     </div>
                                 </div>
@@ -486,9 +496,9 @@ export function TableOfContents({
                                     <Button
                                         isIconOnly size="sm" variant="flat"
                                         onPress={() => setIsCollapsed(!isCollapsed)}
-                                        aria-label={isCollapsed ? "Expand" : "Collapse"}
+                                        aria-label={isCollapsed ? "Show chapters" : "Hide chapters"}
                                     >
-                                        {isCollapsed ? <TbChevronDown size={16} /> : <TbChevronUp size={16} />}
+                                        {isCollapsed ? <TbListDetails size={16} /> : <TbX size={16} />}
                                     </Button>
                                 </div>
                             </div>

@@ -8,6 +8,22 @@
     --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
+/* Smooth scrolling for chapter navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Override scroll behavior for reduced motion users */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .reduce-motion * {
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Accessibility classes */
 .reduce-motion * {
     animation-duration: 0.01ms !important;
