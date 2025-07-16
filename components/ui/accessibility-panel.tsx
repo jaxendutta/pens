@@ -1,3 +1,4 @@
+// components/ui/accessibility-panel.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,6 +16,7 @@ import {
     Card,
     CardBody,
     Chip,
+    Divider,
 } from "@heroui/react";
 import { useTheme } from 'next-themes';
 import {

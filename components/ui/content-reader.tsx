@@ -1,3 +1,4 @@
+// components/ui/content-reader.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -53,9 +54,6 @@ const fadeInVariants = {
 export function ContentReader({ content, type }: ContentReaderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [imageError, setImageError] = useState(false);
-    const [coverImagePath, setCoverImagePath] = useState<string>('');
-    const [imageExtensionIndex, setImageExtensionIndex] = useState(0);
     const [useChapterCards, setUseChapterCards] = useState(false);
 
     const { isOpen: isAccessibilityOpen, onOpen: onAccessibilityOpen, onOpenChange: onAccessibilityOpenChange } = useDisclosure();
@@ -78,7 +76,6 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     // Track authentication state
     useEffect(() => {
-        // Check if user has already authenticated for this content
         const hasAccess = sessionStorage.getItem(`access_${type}_${content.slug}`) === 'granted';
         setIsAuthenticated(!isProtected || hasAccess);
 
@@ -131,7 +128,7 @@ export function ContentReader({ content, type }: ContentReaderProps) {
 
     return (
         <div className="min-h-screen">
-            {/* Sticky ToC with all actions integrated */}
+            {/* Table of Contents - now includes all floating actions */}
             <TableOfContents
                 content={content.content}
                 onAccessibilityClick={onAccessibilityOpen}
@@ -317,13 +314,11 @@ export function ContentReader({ content, type }: ContentReaderProps) {
                         transition={{ delay: 0.2 }}
                     >
                         {useChapterCards && content.chapters && content.chapters > 1 ? (
-                            // Render with chapter cards
                             <ContentRenderer
                                 content={content.content}
                                 useChapterCards={true}
                             />
                         ) : (
-                            // Render as single card
                             <Card>
                                 <CardBody className="lg:p-8 md:p-7 p-6">
                                     <ContentRenderer
